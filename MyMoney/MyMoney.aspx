@@ -1,8 +1,5 @@
 ﻿<%@ Page Title="MyMoney" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Money.aspx.cs" Inherits="Money._Default" Async="true" %>
-
  
-    
-
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
 
@@ -10,6 +7,13 @@
         <h1>My Money</h1>
         <p class="lead">Här kommer jag att lära mig coola saker.</p>
         <p><button type="submit" class="btn btn-primary btn-lg" id="UpdateStockPrice" runat="server" onserverclick="UpdateStockPrice_onclickAsync">Uppdatera kurser &raquo;</button></p>
+        <p><button type="submit" class="btn btn-primary btn-lg" id="AF" runat="server" onserverclick="ShowTable">AF</button>
+           <button type="submit" class="btn btn-primary btn-lg" id="KF" runat="server" onserverclick="ShowTable">KF</button>
+            <button type="submit" class="btn btn-primary btn-lg" id="ISK" runat="server" onserverclick="ShowTable">ISK</button>
+        </p>
+        <p><button type="submit" class="btn btn-primary btn-lg" id="IPS" runat="server" onserverclick="ShowTable">IPS (Pension)</button>
+           <button type="submit" class="btn btn-primary btn-lg" id="TJP" runat="server" onserverclick="ShowTable">TJP (Pension)</button>
+        </p>
     
     </div>
 

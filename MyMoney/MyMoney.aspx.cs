@@ -22,15 +22,14 @@ namespace Money
         protected void Page_Load(object sender, EventArgs e)
         {
             // Logger("INFO", "Nu kör vi igång!");
-            getIPSTable();
-            
+            Repeater.Visible = false;
         }
 
 
-        private void getIPSTable()
+        private void getTable(string table)
         {
 
-            string mysqlcmnd = "SELECT * FROM money.ips order by Investment;";
+            string mysqlcmnd = "SELECT * FROM money." + table + " order by Investment;";
             DataTable dt = new DataTable();
             float rate = 1;
 
@@ -61,6 +60,7 @@ namespace Money
 
                             float Summa = (float)Antal * (float)Kurs * rate;
                             row[10] = Math.Round(Summa, 0);
+                            rate = 1;
                         }
 
                         Repeater.DataBind();
@@ -192,11 +192,20 @@ namespace Money
             public string[] rates { get; set; }
         }
 
+
+        public void ShowTable(object sender, EventArgs e)
+        {
+            string Account = sender.GetObjectId().ToString();
+            getTable(Account);
+            Repeater.Visible = true;
+        }
+
         public async void UpdateStockPrice_onclickAsync(object sender, EventArgs e)
         {
 
             // key: bo5suuvrh5rbvm1sl1t0   https://finnhub.io/dashboard
             // https://finnhub.io/api/v1/quote?symbol=AAPL&token=bo5suuvrh5rbvm1sl1t0
+
 
             string mysqlcmnd = "SELECT * FROM money.ips;";
             string apiKey = "";
@@ -249,7 +258,7 @@ namespace Money
             }
 
             // Reload the table
-            getIPSTable();
+            getTable("ips");
         }
 
         public float ConvertExchangeRates(string Valuta)
