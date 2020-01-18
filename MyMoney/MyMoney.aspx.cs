@@ -78,6 +78,69 @@ namespace Money
             }
         }
 
+        private void getMultipleTable(string[] tables)
+        {
+
+            //Bygg upp SQL kommandot med UNION
+            //select * from money.tjp union select * from money.kf; 
+            string mysqlcmnd = "SELECT * FROM money." +tables[0];
+
+            for (int i = 1; i < tables.Length; i++)
+            {
+                mysqlcmnd = mysqlcmnd + " union select * from money." + tables[i];
+            }
+                
+                
+            mysqlcmnd = mysqlcmnd  + " order by Investment;";
+            DataTable dt = new DataTable();
+            float rate = 1;
+
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(conString))
+                {
+                    connection.Open();
+
+                    using (MySqlCommand myCommand = new MySqlCommand(mysqlcmnd, connection))
+                    {
+
+                        using (MySqlDataAdapter mysqlDa = new MySqlDataAdapter(myCommand))
+                            mysqlDa.Fill(dt);
+
+                        Repeater.DataSource = dt;
+                        dt.Columns.Add("Summa", typeof(float));
+
+                        foreach (DataRow row in dt.Rows)
+                        {
+                            var Antal = row[2];
+                            var Kurs = row[3];
+                            string Valuta = row[8].ToString();
+                            if (string.Compare(Valuta, "SEK") != 0)
+                            {
+                                rate = ConvertExchangeRates(Valuta);
+                            }
+
+                            float Summa = (float)Antal * (float)Kurs * rate;
+                            row[10] = Math.Round(Summa, 0);
+                            rate = 1;
+                        }
+
+                        Repeater.DataBind();
+
+                        //drpDownNames.DataSource = dt;
+                        //drpDownNames.DataTextField = dt.Columns["Investment"].ToString();
+                        //drpDownNames.DataValueField = dt.Columns["Antal"].ToString();
+                        //drpDownNames.DataBind();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger("ERROR", ex.Message);
+            }
+        }
+
+
         public class AlphaVantageData
         {
             public DateTime Timestamp { get; set; }
@@ -196,7 +259,15 @@ namespace Money
         public void ShowTable(object sender, EventArgs e)
         {
             string Account = sender.GetObjectId().ToString();
-            getTable(Account);
+            
+            if (Account.Contains("_"))
+            {
+                string[] tables = Account.Split('_');
+                getMultipleTable(tables);
+            }
+            else
+                getTable(Account);
+
             Repeater.Visible = true;
         }
 
@@ -239,6 +310,7 @@ namespace Money
                                 FinnhubData StockData = JsonConvert.DeserializeObject<FinnhubData>(responseBody);
                                 decimal CurrentOpenPrice = StockData.C;
 
+                                System.Threading.Thread.Sleep(1000);
                                 UpdateStock(symbol, CurrentOpenPrice);
                                 Logger("DEBUG", symbol + " " + CurrentOpenPrice);
                             }
