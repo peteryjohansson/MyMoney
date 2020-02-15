@@ -12,6 +12,11 @@ using Newtonsoft.Json;
 using ServiceStack;
 using ServiceStack.Text;
 
+//drpDownNames.DataSource = dt;
+//drpDownNames.DataTextField = dt.Columns["Investment"].ToString();
+//drpDownNames.DataValueField = dt.Columns["Antal"].ToString();
+//drpDownNames.DataBind();
+
 namespace Money
 {
     public partial class _Default : Page
@@ -22,7 +27,14 @@ namespace Money
         protected void Page_Load(object sender, EventArgs e)
         {
             // Logger("INFO", "Nu kör vi igång!");
-            Repeater.Visible = false;
+           // Repeater.Visible = false;
+
+            if (!IsPostBack)
+            {
+                ViewState["Sort"] = new List<String>();
+                ViewState["Table"] = new List<String>();
+            }
+
         }
 
 
@@ -32,6 +44,7 @@ namespace Money
             string mysqlcmnd = "SELECT * FROM money." + table + " order by Investment;";
             DataTable dt = new DataTable();
             float rate = 1;
+            ViewState["Table"] = table;
 
             try
             {
@@ -43,9 +56,9 @@ namespace Money
                     {
 
                         using (MySqlDataAdapter mysqlDa = new MySqlDataAdapter(myCommand))
-                            mysqlDa.Fill(dt);
+                        mysqlDa.Fill(dt);
 
-                        Repeater.DataSource = dt;
+                        //Repeater.DataSource = dt;
                         dt.Columns.Add("Summa", typeof(float));
 
                         foreach (DataRow row in dt.Rows)
@@ -63,12 +76,13 @@ namespace Money
                             rate = 1;
                         }
 
+                        DataView dv = new DataView(dt);
+                        dv.Sort = String.Join(",", ((List<String>)ViewState["Sort"]).ToArray());
+                        Repeater.DataSource = dv;
+
                         Repeater.DataBind();
 
-                        //drpDownNames.DataSource = dt;
-                        //drpDownNames.DataTextField = dt.Columns["Investment"].ToString();
-                        //drpDownNames.DataValueField = dt.Columns["Antal"].ToString();
-                        //drpDownNames.DataBind();
+
                     }
                 }
             }
@@ -85,11 +99,13 @@ namespace Money
             //select * from money.tjp union select * from money.kf; 
             string mysqlcmnd = "SELECT * FROM money." +tables[0];
 
+            ViewState["Table"] = tables[0];
+
             for (int i = 1; i < tables.Length; i++)
             {
                 mysqlcmnd = mysqlcmnd + " union select * from money." + tables[i];
+                ViewState["Table"] = ViewState["Table"] + "_" + tables[i];
             }
-                
                 
             mysqlcmnd = mysqlcmnd  + " order by Investment;";
             DataTable dt = new DataTable();
@@ -107,7 +123,7 @@ namespace Money
                         using (MySqlDataAdapter mysqlDa = new MySqlDataAdapter(myCommand))
                             mysqlDa.Fill(dt);
 
-                        Repeater.DataSource = dt;
+                        //Repeater.DataSource = dt;
                         dt.Columns.Add("Summa", typeof(float));
 
                         foreach (DataRow row in dt.Rows)
@@ -125,12 +141,12 @@ namespace Money
                             rate = 1;
                         }
 
+                        DataView dv = new DataView(dt);
+                        dv.Sort = String.Join(",", ((List<String>)ViewState["Sort"]).ToArray());
+                        Repeater.DataSource = dv;
+
                         Repeater.DataBind();
 
-                        //drpDownNames.DataSource = dt;
-                        //drpDownNames.DataTextField = dt.Columns["Investment"].ToString();
-                        //drpDownNames.DataValueField = dt.Columns["Antal"].ToString();
-                        //drpDownNames.DataBind();
                     }
                 }
             }
@@ -186,7 +202,7 @@ namespace Money
         //{
         //    //  Welcome to Alpha Vantage! Here is your API key: APA3UI90FWXJA9IM
         //    //  string ApiURL = "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=MSFT&interval=1min&apikey=APA3UI90FWXJA9IM";
-        //    //  https://www.alphavantage.co/query?function=BATCH_STOCK_QUOTES&apikey=xxx&symbols=MSFT,AAPL,FB
+        //    //  https://www.alphavantage.co/query?function=BATCH_STOCK_QUOTES&apikey=xxx&symbols=MSFT,AAPL,FB  Denna fungerar enbart med amerikanska aktier
         //    // NOTERA: För att använda detta så måste stockholms börsens aktier markeras med STO och inte ST
 
         //    string mysqlcmnd = "SELECT * FROM money.ips;";
@@ -283,7 +299,7 @@ namespace Money
 
             DataTable dt = new DataTable();
             HttpClient client = new HttpClient();
-
+            
             try
             {
                 using (MySqlConnection connection = new MySqlConnection(conString))
@@ -380,5 +396,39 @@ namespace Money
             }
         }
 
+        protected void Repeater_ItemCommand(object source, RepeaterCommandEventArgs e)
+        {
+            Logger("DEBUG", "Hammar jag här Repeater_ItemCommand");
+
+            // Get the argument.
+            String argument = (String)e.CommandArgument;
+
+            List<String> sort = (List<String>)ViewState["Sort"];
+
+            // If the Column is already in the sort, remove it.
+            if (sort.Contains(argument))
+            {
+                sort.Remove(argument);
+            }
+
+            // Insert it at the front.
+            sort.Insert(0, argument);
+
+            string table = ViewState["Table"].ToString();
+
+            if (table.Contains("_"))
+            {
+                string[] tables = table.Split('_');
+                getMultipleTable(tables);
+            }
+            else
+            {
+                getTable(table);
+            }
+            
+
+            
+
+        }
     }
 }
