@@ -31,7 +31,8 @@ namespace Money
 
             if (!IsPostBack)
             {
-                ViewState["Sort"] = new List<String>();
+                ViewState["Sort"]  = "Investment";
+                ViewState["SortOder"] = "DESC";
                 ViewState["Table"] = new List<String>();
             }
 
@@ -77,7 +78,13 @@ namespace Money
                         }
 
                         DataView dv = new DataView(dt);
-                        dv.Sort = String.Join(",", ((List<String>)ViewState["Sort"]).ToArray());
+                        dv.Sort = ViewState["Sort"].ToString();
+
+                        //Om sortering har blivit begärt så behöver ta reda på i vilken ordning som det ska ske
+                        if (!dv.Sort.IsEmpty())
+                        {
+                            dv.Sort = dv.Sort + " " + ViewState["SortOder"];
+                        }
                         Repeater.DataSource = dv;
 
                         Repeater.DataBind();
@@ -142,7 +149,15 @@ namespace Money
                         }
 
                         DataView dv = new DataView(dt);
-                        dv.Sort = String.Join(",", ((List<String>)ViewState["Sort"]).ToArray());
+                        dv.Sort = ViewState["Sort"].ToString();
+
+                        //Om sortering har blivit begärt så behöver ta reda på i vilken ordning som det ska ske
+                        if (!dv.Sort.IsEmpty())
+                        {
+                            dv.Sort = dv.Sort + " " + ViewState["SortOder"];
+                        }
+
+                        
                         Repeater.DataSource = dv;
 
                         Repeater.DataBind();
@@ -398,21 +413,22 @@ namespace Money
 
         protected void Repeater_ItemCommand(object source, RepeaterCommandEventArgs e)
         {
-            Logger("DEBUG", "Hammar jag här Repeater_ItemCommand");
-
             // Get the argument.
             String argument = (String)e.CommandArgument;
 
-            List<String> sort = (List<String>)ViewState["Sort"];
+            ViewState["Sort"] = argument;
+            string sortorder = ViewState["SortOder"].ToString();
+     
+            //Sort out the sort order ;-)
 
-            // If the Column is already in the sort, remove it.
-            if (sort.Contains(argument))
+            if (sortorder == "ASC")
             {
-                sort.Remove(argument);
+                ViewState["SortOder"] = "DESC";
             }
-
-            // Insert it at the front.
-            sort.Insert(0, argument);
+            else if (sortorder == "DESC")
+            {
+                ViewState["SortOder"] = "ASC";
+            }
 
             string table = ViewState["Table"].ToString();
 
@@ -425,9 +441,6 @@ namespace Money
             {
                 getTable(table);
             }
-            
-
-            
 
         }
     }
