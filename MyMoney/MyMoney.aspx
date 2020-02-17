@@ -5,7 +5,7 @@
     <div class="jumbotron">
         <h1>My Money</h1>
         <p class="lead">Här kommer jag att lära mig coola saker.</p>
-        <p><button type="submit" class="btn btn-primary btn-lg" id="UpdateStockPrice" runat="server" onserverclick="UpdateStockPrice_onclickAsync">Uppdatera kurser &raquo;</button></p>
+        
         <p><button type="submit" class="btn btn-primary btn-lg" id="AF" runat="server" onserverclick="ShowTable">AF</button>
            <button type="submit" class="btn btn-primary btn-lg" id="KF" runat="server" onserverclick="ShowTable">KF</button>
             <button type="submit" class="btn btn-primary btn-lg" id="ISK" runat="server" onserverclick="ShowTable">ISK</button>
@@ -37,6 +37,7 @@
             <td><%# DataBinder.Eval(Container.DataItem,"GAVKurs") %></td>
             <td><%# DataBinder.Eval(Container.DataItem,"Kurs") %></td>
             <td><%# DataBinder.Eval(Container.DataItem,"Summa") %></td>
+            <td><asp:ImageButton ImageUrl="Images\sword.png" runat="server" ID="UpdateInv" Text="Uppdatera Kurs" CommandName="UpdateStockPrice" CommandArgument=<%# DataBinder.Eval(Container.DataItem,"Symbol") %>/>  </td>
             </tr>
         </ItemTemplate>
         <FooterTemplate>
@@ -47,7 +48,11 @@
 
 
 
-<%--        <div class="form-group">
+<%--      
+    
+             <td><asp:LinkButton runat="server" ID="UpdateInv" Text="Uppdatera Kurs" CommandName="UpdateStockPrice" CommandArgument=<%# DataBinder.Eval(Container.DataItem,"Symbol") %>/>  </td>
+    
+    <div class="form-group">
          <label for="NAnting" class="col-sm-3 control-label" >Aktier:</label>
          <div class="col-sm-8">
                  <asp:DropDownList class="form-control" ID="drpDownNames" value="" runat="server" readonly="true">

@@ -39,7 +39,7 @@ namespace Money
         }
 
 
-        private void getTable(string table)
+        private void GetTable(string table)
         {
 
             string mysqlcmnd = "SELECT * FROM money." + table + " order by Investment;";
@@ -88,8 +88,6 @@ namespace Money
                         Repeater.DataSource = dv;
 
                         Repeater.DataBind();
-
-
                     }
                 }
             }
@@ -99,7 +97,7 @@ namespace Money
             }
         }
 
-        private void getMultipleTable(string[] tables)
+        private void GetMultipleTable(string[] tables)
         {
 
             //Bygg upp SQL kommandot med UNION
@@ -195,8 +193,8 @@ namespace Money
 
         public void UpdateStock(string symbol, decimal Kurs)
         {
-
-            string mysqlcmnd = "UPDATE money.ips SET Kurs =  " + Kurs + " WHERE Symbol = " + quote + symbol + quote + ";";
+            string table = ViewState["Table"].ToString();
+            string mysqlcmnd = "UPDATE money." + table +  " SET Kurs =  " + Kurs + " WHERE Symbol = " + quote + symbol + quote + ";";
 
             try
             {
@@ -213,63 +211,7 @@ namespace Money
             }
         }
 
-        //public void UpdateStockPrice_onclickAV(object sender, EventArgs e)
-        //{
-        //    //  Welcome to Alpha Vantage! Here is your API key: APA3UI90FWXJA9IM
-        //    //  string ApiURL = "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=MSFT&interval=1min&apikey=APA3UI90FWXJA9IM";
-        //    //  https://www.alphavantage.co/query?function=BATCH_STOCK_QUOTES&apikey=xxx&symbols=MSFT,AAPL,FB  Denna fungerar enbart med amerikanska aktier
-        //    // NOTERA: För att använda detta så måste stockholms börsens aktier markeras med STO och inte ST
-
-        //    string mysqlcmnd = "SELECT * FROM money.ips;";
-        //    DataTable dt = new DataTable();
-
-        //    //var symbol = "TSLA";
-        //    var apiKey = "APA3UI90FWXJA9IM";
-        //    //var MultiPrices = $"https://www.alphavantage.co/query?function=BATCH_STOCK_QUOTES&apikey={apiKey}&symbols=MSFT,AAPL,FB&datatype=csv".GetStringFromUrl().FromCsv<List<AlphaVantageBatchData>>();
-        //    //var Symb = MultiPrices.First().symbol;
-
-
-        //    try
-        //    {
-        //        using (MySqlConnection connection = new MySqlConnection(conString))
-        //        {
-        //            connection.Open();
-
-        //            using (MySqlCommand myCommand = new MySqlCommand(mysqlcmnd, connection))
-        //            {
-
-        //                using (MySqlDataAdapter mysqlDa = new MySqlDataAdapter(myCommand))
-        //                mysqlDa.Fill(dt);
-
-        //                foreach (DataRow row in dt.Rows)
-        //                {
-        //                    string symbol = row[9].ToString();
-
-        //                    try
-        //                    {
-        //                        var Prices = $"https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol={symbol}&interval=1min&apikey={apiKey}&datatype=csv".GetStringFromUrl().FromCsv<List<AlphaVantageData>>();
-        //                        var CurrentOpenPrice = Prices.First().Open;
-        //                        UpdateStock(symbol, CurrentOpenPrice);
-
-        //                        System.Threading.Thread.Sleep(20000);
-
-        //                        Logger("DEBUG", symbol + " " + CurrentOpenPrice);
-        //                    }
-        //                    catch (Exception ex)
-        //                    {
-        //                        Logger("ERROR", symbol + " " + ex.Message);
-        //                    }
-        //                }
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Logger("ERROR", ex.Message);
-        //    }
-        //}
-
-
+      
         public class FinnhubData
         {
             public decimal C { get; set; }
@@ -294,74 +236,68 @@ namespace Money
             if (Account.Contains("_"))
             {
                 string[] tables = Account.Split('_');
-                getMultipleTable(tables);
+                GetMultipleTable(tables);
             }
             else
-                getTable(Account);
+                GetTable(Account);
 
             Repeater.Visible = true;
         }
 
-        public async void UpdateStockPrice_onclickAsync(object sender, EventArgs e)
+        public void UpdatePriceSpecial(string table, string symbol)
+        {
+            //  Welcome to Alpha Vantage! Here is your API key: APA3UI90FWXJA9IM
+            //  string ApiURL = "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=MSFT&interval=1min&apikey=APA3UI90FWXJA9IM";
+            //  https://www.alphavantage.co/query?function=BATCH_STOCK_QUOTES&apikey=xxx&symbols=MSFT,AAPL,FB  Denna fungerar enbart med amerikanska aktier
+            // NOTERA: För att använda detta så måste stockholms börsens aktier markeras med STO och inte ST
+
+            //var symbol = "TSLA";
+            var apiKey = "APA3UI90FWXJA9IM";
+            //var MultiPrices = $"https://www.alphavantage.co/query?function=BATCH_STOCK_QUOTES&apikey={apiKey}&symbols=MSFT,AAPL,FB&datatype=csv".GetStringFromUrl().FromCsv<List<AlphaVantageBatchData>>();
+            //var Symb = MultiPrices.First().symbol;
+
+            try
+            {
+                var Prices = $"https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol={symbol}&interval=1min&apikey={apiKey}&datatype=csv".GetStringFromUrl().FromCsv<List<AlphaVantageData>>();
+                var CurrentOpenPrice = Prices.First().Open;
+                UpdateStock(symbol, CurrentOpenPrice);
+                                
+                Logger("DEBUG", symbol + " " + CurrentOpenPrice);
+            }
+            catch (Exception ex)
+            {
+                Logger("ERROR", symbol + " " + ex.Message);
+            }
+
+        }
+
+        public async void UpdatePrice(string table, string symbol)
         {
 
             // key: bo5suuvrh5rbvm1sl1t0   https://finnhub.io/dashboard
             // https://finnhub.io/api/v1/quote?symbol=AAPL&token=bo5suuvrh5rbvm1sl1t0
-
-
-            string mysqlcmnd = "SELECT * FROM money.ips;";
+          
             string apiKey = "";
 
-            DataTable dt = new DataTable();
             HttpClient client = new HttpClient();
-            
+
             try
             {
-                using (MySqlConnection connection = new MySqlConnection(conString))
-                {
-                    connection.Open();
 
-                    using (MySqlCommand myCommand = new MySqlCommand(mysqlcmnd, connection))
-                    {
-                        using (MySqlDataAdapter mysqlDa = new MySqlDataAdapter(myCommand))
-                            mysqlDa.Fill(dt);
+                string url = $"https://finnhub.io/api/v1/quote?symbol={symbol}&token={apiKey}";
 
-                        foreach (DataRow row in dt.Rows)
-                        {
-                            string symbol = row[9].ToString();
+                string responseBody = await client.GetStringAsync(url);
+                FinnhubData StockData = JsonConvert.DeserializeObject<FinnhubData>(responseBody);
+                decimal CurrentOpenPrice = StockData.C;
 
-                            //Logger("DEBUG", "Symbol: " + symbol);
-
-                            try
-                            {
-
-                                string url = $"https://finnhub.io/api/v1/quote?symbol={symbol}&token={apiKey}";
-
-                                string responseBody = await client.GetStringAsync(url);
-                                FinnhubData StockData = JsonConvert.DeserializeObject<FinnhubData>(responseBody);
-                                decimal CurrentOpenPrice = StockData.C;
-
-                                System.Threading.Thread.Sleep(1000);
-                                UpdateStock(symbol, CurrentOpenPrice);
-                                Logger("DEBUG", symbol + " " + CurrentOpenPrice);
-                            }
-                            catch (Exception ex)
-                            {
-                                Logger("ERROR", symbol + " " + ex.Message);
-                            }
-                        }
-
-
-                    }
-                }
+                UpdateStock(symbol, CurrentOpenPrice);
+                Logger("DEBUG", symbol + " " + CurrentOpenPrice);
             }
             catch (Exception ex)
             {
-                Logger("ERROR", ex.Message);
+                Logger("ERROR", symbol + " " + ex.Message);
             }
 
-            // Reload the table
-            getTable("ips");
         }
 
         public float ConvertExchangeRates(string Valuta)
@@ -415,33 +351,80 @@ namespace Money
         {
             // Get the argument.
             String argument = (String)e.CommandArgument;
-
-            ViewState["Sort"] = argument;
-            string sortorder = ViewState["SortOder"].ToString();
-     
-            //Sort out the sort order ;-)
-
-            if (sortorder == "ASC")
-            {
-                ViewState["SortOder"] = "DESC";
-            }
-            else if (sortorder == "DESC")
-            {
-                ViewState["SortOder"] = "ASC";
-            }
-
+            String action = (String)e.CommandName;
             string table = ViewState["Table"].ToString();
 
-            if (table.Contains("_"))
+
+            if (action == "Sort")
             {
-                string[] tables = table.Split('_');
-                getMultipleTable(tables);
+
+                ViewState["Sort"] = argument;
+                string sortorder = ViewState["SortOder"].ToString();
+
+                //Sort out the sort order ;-)
+
+                if (sortorder == "ASC")
+                {
+
+                    ViewState["SortOder"] = "DESC";
+                }
+                else if (sortorder == "DESC")
+                {
+                    ViewState["SortOder"] = "ASC";
+                }
+
+                
+                if (table.Contains("_"))
+                {
+                    string[] tables = table.Split('_');
+                    GetMultipleTable(tables);
+                }
+                else
+                {
+                    GetTable(table);
+                }
             }
-            else
+
+            if (action == "UpdateStockPrice")
             {
-                getTable(table);
+
+                string[] Specialaktier = WebConfigurationManager.AppSettings["SpecialAktier"].Split(',');
+
+                bool special = false;
+
+                foreach (string aktie in Specialaktier)
+                {
+                    if (aktie == argument)
+                    {
+                        special = true;
+                    }
+
+                }
+
+                if (special == true)
+                {
+                    UpdatePriceSpecial(table, argument);
+                }
+                else
+                {
+                    UpdatePrice(table, argument);
+                }
+
+
+                //Läs in tabellen på nytt
+                if (table.Contains("_"))
+                {
+                    string[] tables = table.Split('_');
+                    GetMultipleTable(tables);
+                }
+                else
+                {
+                    GetTable(table);
+                }
             }
 
         }
+
+            
     }
 }
