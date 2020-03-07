@@ -44,7 +44,6 @@ namespace Money
 
             string mysqlcmnd = "SELECT * FROM money." + table + " order by Investment;";
             DataTable dt = new DataTable();
-            float rate = 1;
             ViewState["Table"] = table;
 
             try
@@ -65,16 +64,10 @@ namespace Money
                         foreach (DataRow row in dt.Rows)
                         {
                             var Antal = row[2];
-                            var Kurs = row[3];
-                            string Valuta = row[8].ToString();
-                            if (string.Compare(Valuta, "SEK") != 0)
-                            {
-                                rate = ConvertExchangeRates(Valuta);
-                            }
-
-                            float Summa = (float)Antal * (float)Kurs * rate;
-                            row[10] = Math.Round(Summa, 0);
-                            rate = 1;
+                            var Kurs = row[4];
+                            
+                            float Summa = (float)Antal * (float)Kurs;
+                            row[12] = Math.Round(Summa, 0);
                         }
 
                         DataView dv = new DataView(dt);
@@ -114,8 +107,7 @@ namespace Money
                 
             mysqlcmnd = mysqlcmnd  + " order by Investment;";
             DataTable dt = new DataTable();
-            float rate = 1;
-
+            
             try
             {
                 using (MySqlConnection connection = new MySqlConnection(conString))
@@ -134,16 +126,10 @@ namespace Money
                         foreach (DataRow row in dt.Rows)
                         {
                             var Antal = row[2];
-                            var Kurs = row[3];
-                            string Valuta = row[8].ToString();
-                            if (string.Compare(Valuta, "SEK") != 0)
-                            {
-                                rate = ConvertExchangeRates(Valuta);
-                            }
-
-                            float Summa = (float)Antal * (float)Kurs * rate;
-                            row[10] = Math.Round(Summa, 0);
-                            rate = 1;
+                            var Kurs = row[4];
+                            
+                            float Summa = (float)Antal * (float)Kurs;
+                            row[12] = Math.Round(Summa, 0);
                         }
 
                         DataView dv = new DataView(dt);
@@ -296,31 +282,6 @@ namespace Money
             catch (Exception ex)
             {
                 Logger("ERROR", symbol + " " + ex.Message);
-            }
-
-        }
-
-        public float ConvertExchangeRates(string Valuta)
-        {
-            //https://api.exchangeratesapi.io/latest?base=USD
-
-            string url = $"https://api.exchangeratesapi.io/latest?base={Valuta}";
-            var client = new System.Net.WebClient();
-            
-            try
-            {
-                string responseBody = client.DownloadString(url);
-                int position = responseBody.IndexOf("SEK");
-                string substring = responseBody.Substring(position + 5, 20);
-                int endposition = substring.IndexOf(",");
-                string rate = substring.Substring(0, endposition - 1);
-                return float.Parse(rate);
-
-            }
-            catch (Exception ex)
-            {
-                Logger("ERROR", "Problem med att hämta Exchange rates " + ex.Message);
-                return 0;
             }
 
         }
