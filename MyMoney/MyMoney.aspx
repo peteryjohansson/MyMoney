@@ -16,12 +16,12 @@
  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.3/jstree.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+
 </head>
 <body>
     <div id="page-wrapper" class="container">
-      <div class="panel panel-default">
+      <div class="panel panel-info">
             <div class="panel-heading">
-                Sammanställning
             </div>
     <div class="panel-body">
     <form role="form" runat="server">
@@ -40,37 +40,32 @@
              </div>
         <div class="col-sm-9 col-md-6 col-lg-7">
               <div class="jumbotron">
-                   <table class="table">
-                        <tbody>
-                          <tr class="success">
-                            <td>Success</td>
-                            <td>john@example.com</td>
-                          </tr>
-                          <tr class="danger">
-                            <td>Danger</td>
-                            <td>mary@example.com</td>
-                          </tr>
-                          <tr class="info">
-                            <td>Info</td>
-                            <td>july@example.com</td>
-                          </tr>
-                          <tr class="warning">
-                            <td>Warning</td>
-                            <td>bo@example.com</td>
-                          </tr>
-                          <tr class="active">
-                            <td>Active</td>
-                            <td>act@example.com</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                 
-               </div>
-        </div>
-    </div>
-    </div>
-    </div>
+                    <asp:Repeater id="RepeaterTS" runat="server"  >
+                            <HeaderTemplate>
+                            <table class="table table-bordered table-hover table-condensed" >
+                                    <tr>
+                                    <th><asp:LinkButton runat="server" ID="Depå"  Text="Depå"  /></th>
+                                    <th><asp:LinkButton runat="server" ID="Summa"  Text="Summa" /></th>
+                                    </tr>
+                            </HeaderTemplate>
+                            <ItemTemplate>
+                                <tr class="warning">
+                                <td><%# DataBinder.Eval(Container.DataItem,"Depå") %></td>
+                                <td><%# DataBinder.Eval(Container.DataItem,"Summa") %></td>
+                                </tr>
+                            </ItemTemplate>
+                            <FooterTemplate>
+                            </table>
+                            </FooterTemplate>
+                     </asp:Repeater>
+             
+            
+                  <strong><input type="text" class="well well-sm  alert-success pull-right" id="totalSumField" runat="server" readonly /></strong>
+            
+             </div>
+             </div>
 
+                             
 
 
 
@@ -83,6 +78,7 @@
                 <th><asp:LinkButton runat="server" ID="LinkButton1" CommandName="Sort" Text="GAVKurs" CommandArgument="GAVKurs" /></th>
                 <th><asp:LinkButton runat="server" ID="LinkButton2" CommandName="Sort" Text="Kurs" CommandArgument="Kurs" /></th>
                 <th><asp:LinkButton runat="server" ID="LinkButton3" CommandName="Sort" Text="Summa" CommandArgument="Summa" /></th>
+                    <th><asp:LinkButton runat="server" ID="LinkButton4" Text="Uppdatera" /></th>
                 </tr>
         </HeaderTemplate>
         <ItemTemplate>
@@ -92,7 +88,7 @@
             <td><%# DataBinder.Eval(Container.DataItem,"GAVKurs") %></td>
             <td><%# DataBinder.Eval(Container.DataItem,"Kurs") %></td>
             <td><%# DataBinder.Eval(Container.DataItem,"Summa") %></td>
-            <td><asp:ImageButton ImageUrl="Images\sword.png" runat="server" ID="UpdateInv" Text="Uppdatera Kurs" CommandName="UpdateStockPrice" CommandArgument=<%# DataBinder.Eval(Container.DataItem,"Symbol") %>/>  </td>
+            <td><asp:ImageButton ImageUrl="Images\icon.png" runat="server" ID="UpdateInv" Text="Uppdatera Kurs" CommandName="UpdateStockPrice" CommandArgument=<%# DataBinder.Eval(Container.DataItem,"Symbol") %>/>  </td>
             </tr>
         </ItemTemplate>
         <FooterTemplate>

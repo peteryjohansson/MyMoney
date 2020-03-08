@@ -27,7 +27,9 @@ namespace Money
         protected void Page_Load(object sender, EventArgs e)
         {
             // Logger("INFO", "Nu kör vi igång!");
-           // Repeater.Visible = false;
+            // Repeater.Visible = false;
+            totalSumField.Value = "";
+            ShowSummary();
 
             if (!IsPostBack)
             {
@@ -38,6 +40,44 @@ namespace Money
 
         }
 
+        private void ShowSummary()
+        {
+
+            string mysqlcmnd = "SELECT * FROM money.total";
+            DataTable dt = new DataTable();
+            float totalsumma = 0;
+            
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(conString))
+                {
+                    connection.Open();
+
+                    using (MySqlCommand myCommand = new MySqlCommand(mysqlcmnd, connection))
+                    {
+
+                        using (MySqlDataAdapter mysqlDa = new MySqlDataAdapter(myCommand))
+                        mysqlDa.Fill(dt);
+                                                
+                        foreach (DataRow row in dt.Rows)
+                        {
+                            totalsumma +=  (float)row[2];
+                        }
+
+                        totalSumField.Value = "MEGA Summa: " + totalsumma.ToString();
+
+                        DataView dv = new DataView(dt);
+
+                        RepeaterTS.DataSource = dv;
+                        RepeaterTS.DataBind();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger("ERROR", ex.Message);
+            }
+        }
 
         private void GetTable(string table)
         {

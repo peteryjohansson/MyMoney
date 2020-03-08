@@ -76,6 +76,24 @@ namespace Money {
         protected global::System.Web.UI.HtmlControls.HtmlButton AF_KF_ISK_IPS_TJP;
         
         /// <summary>
+        /// RepeaterTS control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Repeater RepeaterTS;
+        
+        /// <summary>
+        /// totalSumField control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlInputText totalSumField;
+        
+        /// <summary>
         /// Repeater control.
         /// </summary>
         /// <remarks>
