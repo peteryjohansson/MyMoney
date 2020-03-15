@@ -11,6 +11,7 @@ using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using ServiceStack;
 using ServiceStack.Text;
+using System.Web.Services;
 
 //drpDownNames.DataSource = dt;
 //drpDownNames.DataTextField = dt.Columns["Investment"].ToString();
@@ -27,17 +28,36 @@ namespace Money
         protected void Page_Load(object sender, EventArgs e)
         {
             // Logger("INFO", "Nu kör vi igång!");
-            // Repeater.Visible = false;
+            //Repeater.Visible = false;
             totalSumField.Value = "";
+            totalKontanterField.Value = "";
+
             ShowSummary();
 
             if (!IsPostBack)
             {
-                ViewState["Sort"]  = "Investment";
+                ViewState["Sort"] = "Investment";
                 ViewState["SortOder"] = "DESC";
                 ViewState["Table"] = new List<String>();
             }
 
+        }
+
+        [WebMethod]
+        public static List<object> GetChartData()
+        {
+
+            List<object> chartData = new List<object>();
+            chartData.Add(new object[]
+            {
+            "Depå", "Summa"
+            });
+            chartData.Add(new object[] { "AF", 152307 });
+            chartData.Add(new object[] { "KF", 454408 });
+            chartData.Add(new object[] { "ISK",86072 });
+            chartData.Add(new object[] { "IPS", 522846 });
+            chartData.Add(new object[] { "TJP", 495223 });
+            return chartData;
         }
 
         private void ShowSummary()
@@ -46,6 +66,7 @@ namespace Money
             string mysqlcmnd = "SELECT * FROM money.total";
             DataTable dt = new DataTable();
             float totalsumma = 0;
+            float kontantsumma = 0;
             
             try
             {
@@ -62,9 +83,11 @@ namespace Money
                         foreach (DataRow row in dt.Rows)
                         {
                             totalsumma +=  (float)row[2];
+                            kontantsumma += (float)row[3];
                         }
 
                         totalSumField.Value = "MEGA Summa: " + totalsumma.ToString();
+                        totalKontanterField.Value = "Kontanter: " + kontantsumma.ToString();
 
                         DataView dv = new DataView(dt);
 
@@ -181,11 +204,8 @@ namespace Money
                             dv.Sort = dv.Sort + " " + ViewState["SortOder"];
                         }
 
-                        
                         Repeater.DataSource = dv;
-
                         Repeater.DataBind();
-
                     }
                 }
             }
@@ -194,7 +214,6 @@ namespace Money
                 Logger("ERROR", ex.Message);
             }
         }
-
 
         public class AlphaVantageData
         {
@@ -236,7 +255,6 @@ namespace Money
                 Logger("ERROR", ex.Message);
             }
         }
-
       
         public class FinnhubData
         {
@@ -253,7 +271,6 @@ namespace Money
             DateTime datetime { get; set; }
             public string[] rates { get; set; }
         }
-
 
         public void ShowTable(object sender, EventArgs e)
         {
@@ -319,9 +336,15 @@ namespace Money
                 UpdateStock(symbol, CurrentOpenPrice);
                 Logger("DEBUG", symbol + " " + CurrentOpenPrice);
             }
+
+            catch (ArgumentNullException e)
+            {
+                Logger("ERROR", "UpdatePrice function (argumentnullexception). Symbol: " + symbol + " " + e.Message);
+            }
+
             catch (Exception ex)
             {
-                Logger("ERROR", symbol + " " + ex.Message);
+                Logger("ERROR", "UpdatePrice function. Symbol: " + symbol + " " + ex.Message);
             }
 
         }
@@ -426,6 +449,5 @@ namespace Money
 
         }
 
-            
     }
 }

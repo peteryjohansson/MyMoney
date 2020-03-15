@@ -1,42 +1,75 @@
-﻿<%@ Page Title="MyMoney" Language="C#"AutoEventWireup="true" CodeBehind="MyMoney.aspx.cs" Inherits="Money._Default" Async="true" %>
-<%--
-      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
-    
-    --%>
+﻿<%@ Language="C#"AutoEventWireup="true" CodeBehind="MyMoney.aspx.cs" Inherits="Money._Default" Async="true" %>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <title>My Money</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.3/themes/default/style.min.css" />
- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.3/jstree.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
 </head>
+
+
+    <script type="text/javascript">
+        google.charts.load("visualization", "1", { packages: ["corechart"] });
+        google.charts.setOnLoadCallback(drawChart);
+        function drawChart() {
+            var options = {
+                title: 'Food Items',
+                width: 600,
+                height: 400,
+                bar: { groupWidth: "95%" },
+                legend: { position: "none" },
+                isStacked: true
+            };
+            $.ajax({
+                type: "POST",
+                url: "MyMoney.aspx/GetChartData",
+                data: '{}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (r) {
+                    var data = google.visualization.arrayToDataTable(r.d);
+                    var chart = new google.visualization.PieChart($("#piechart")[0]);
+                    chart.draw(data, options);
+                },
+                failure: function (r) {
+                    alert(r);
+                },
+                error: function (r) {
+                    alert(r);
+                }
+            });
+        } 
+    </script>
+
 <body>
-    <div id="page-wrapper" class="container">
+    <div  class="container">
       <div class="panel panel-info">
-            <div class="panel-heading">
-            </div>
+            <div class="panel-heading"> My Money </div>
+        </div>
     <div class="panel-body">
     <form role="form" runat="server">
          <div class="row">
-             <div class="col-sm-3 col-md-6 col-lg-5">
-                <h1>My Money</h1>
-                <p class="lead">Här kommer jag att lära mig coola saker.</p>
-        
+        <div class="col-sm-3 col-md-6 col-lg-5">
+
+                <div id="piechart"></div>
+
                 <p><button  class="btn btn-primary btn-lg" id="AF" runat="server" onserverclick="ShowTable">AF</button>
-                  <button type="submit" class="btn btn-primary btn-lg" id="KF" runat="server" onserverclick="ShowTable">KF</button>
-                   <button type="submit" class="btn btn-primary btn-lg" id="ISK" runat="server" onserverclick="ShowTable">ISK</button></p>
-                <p><button type="submit" class="btn btn-primary btn-lg" id="IPS" runat="server" onserverclick="ShowTable">IPS (Pension)</button>
-                   <button type="submit" class="btn btn-primary btn-lg" id="TJP" runat="server" onserverclick="ShowTable">TJP (Pension)</button></p>
-                 <button type="submit" class="btn btn-primary btn-lg" id="IPS_TJP" runat="server" onserverclick="ShowTable">All Pension</button>
-                 <button type="submit" class="btn btn-primary btn-lg" id="AF_KF_ISK_IPS_TJP" runat="server" onserverclick="ShowTable">Alla Aktier</button>
+                 <button type="submit" class="btn btn-primary btn-lg" id="KF" runat="server" onserverclick="ShowTable">KF</button>
+                 <button type="submit" class="btn btn-primary btn-lg" id="ISK" runat="server" onserverclick="ShowTable">ISK</button>
+                 <button type="submit" class="btn btn-primary btn-lg" id="IPS" runat="server" onserverclick="ShowTable">IPS</button>
+                 <button type="submit" class="btn btn-primary btn-lg" id="TJP" runat="server" onserverclick="ShowTable">TJP</button></p>
+                 <p><button type="submit" class="btn btn-primary btn-lg" id="IPS_TJP" runat="server" onserverclick="ShowTable">All Pension</button>
+                 <button type="submit" class="btn btn-primary btn-lg" id="AF_KF_ISK_IPS_TJP" runat="server" onserverclick="ShowTable">Alla Aktier</button></p>
+                 <p><button type="submit" class="btn btn-primary btn-lg" id="Crypto" runat="server" onserverclick="ShowTable">Krypto</button></p>
+                 <p><button type="submit" class="btn btn-primary btn-lg" id="TjanstePensioner" runat="server" onserverclick="ShowTable">Tjänstepensioner</button></p>
+
              </div>
         <div class="col-sm-9 col-md-6 col-lg-7">
               <div class="jumbotron">
@@ -59,17 +92,15 @@
                             </FooterTemplate>
                      </asp:Repeater>
              
-            
+                  <strong><input type="text" class="well well-sm  alert-success pull-left" id="totalKontanterField" runat="server" readonly /></strong>
                   <strong><input type="text" class="well well-sm  alert-success pull-right" id="totalSumField" runat="server" readonly /></strong>
             
              </div>
              </div>
-
-                             
-
+      </div>     
 
 
-    <asp:Repeater id="Repeater" runat="server" OnItemCommand="Repeater_ItemCommand">
+        <asp:Repeater id="Repeater" runat="server" OnItemCommand="Repeater_ItemCommand">
         <HeaderTemplate>
                 <table class="table table-striped" >
                 <tr>
@@ -96,6 +127,7 @@
         </FooterTemplate>
     </asp:Repeater>
         </form>
+        </div>
         </div>
 </body>
 </html>

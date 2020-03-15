@@ -11,7 +11,9 @@ namespace MyMoney
         public static void RegisterRoutes(RouteCollection routes)
         {
             var settings = new FriendlyUrlSettings();
-            settings.AutoRedirectMode = RedirectMode.Permanent;
+             settings.AutoRedirectMode = RedirectMode.Permanent;
+           // settings.AutoRedirectMode = RedirectMode.Off;
+            //routes.IgnoreRoute("{page}.aspx/{*webmethod}");
             routes.EnableFriendlyUrls(settings);
         }
     }

@@ -76,6 +76,24 @@ namespace Money {
         protected global::System.Web.UI.HtmlControls.HtmlButton AF_KF_ISK_IPS_TJP;
         
         /// <summary>
+        /// Crypto control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlButton Crypto;
+        
+        /// <summary>
+        /// TjanstePensioner control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlButton TjanstePensioner;
+        
+        /// <summary>
         /// RepeaterTS control.
         /// </summary>
         /// <remarks>
@@ -83,6 +101,15 @@ namespace Money {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Repeater RepeaterTS;
+        
+        /// <summary>
+        /// totalKontanterField control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlInputText totalKontanterField;
         
         /// <summary>
         /// totalSumField control.
