@@ -46,17 +46,45 @@ namespace Money
         [WebMethod]
         public static List<object> GetChartData()
         {
-
             List<object> chartData = new List<object>();
             chartData.Add(new object[]
             {
             "Depå", "Summa"
             });
-            chartData.Add(new object[] { "AF", 152307 });
-            chartData.Add(new object[] { "KF", 454408 });
-            chartData.Add(new object[] { "ISK",86072 });
-            chartData.Add(new object[] { "IPS", 522846 });
-            chartData.Add(new object[] { "TJP", 495223 });
+
+            string conString = WebConfigurationManager.AppSettings["MySqlConnectionString"];
+            string mysqlcmnd = "CALL `money`.`get_sums`();";
+            DataTable dt = new DataTable();
+                        
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(conString))
+                {
+                    connection.Open();
+                    using (MySqlCommand myCommand = new MySqlCommand(mysqlcmnd, connection))
+                    {
+                        using (MySqlDataAdapter mysqlDa = new MySqlDataAdapter(myCommand))
+                        mysqlDa.Fill(dt);
+
+                        var totalsumma =dt.Rows[0][1];
+                        var kontantsumma = dt.Rows[1][1];
+                        var teslasumma = dt.Rows[2][1];
+
+                       int aktiersumma = Convert.ToInt32(totalsumma) - Convert.ToInt32(kontantsumma);
+
+                        chartData.Add(new object[] { "Aktier", aktiersumma });
+                        chartData.Add(new object[] { "Kontanter", kontantsumma });
+                        chartData.Add(new object[] { "Tesla", teslasumma });
+
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+               // Logger("ERROR", ex.Message);
+              // Här måste jag fundera ut hur jag ska fånga ett fel
+            }
+
             return chartData;
         }
 
@@ -236,10 +264,11 @@ namespace Money
             public DateTime Timestamp { get; set; }
         }
 
-        public void UpdateStock(string symbol, decimal Kurs)
+        public void UpdateInvestment(string symbol, decimal Kurs, decimal rate)
         {
             string table = ViewState["Table"].ToString();
-            string mysqlcmnd = "UPDATE money." + table +  " SET Kurs =  " + Kurs + " WHERE Symbol = " + quote + symbol + quote + ";";
+            decimal SEKKurs = Kurs * rate;
+            string mysqlcmnd = "UPDATE money." + table + " SET Kurs =  " + Kurs + ", SEKKURS = " + SEKKurs + " WHERE Symbol = " + quote + symbol + quote + ";";
 
             try
             {
@@ -254,6 +283,7 @@ namespace Money
             {
                 Logger("ERROR", ex.Message);
             }
+
         }
       
         public class FinnhubData
@@ -287,7 +317,7 @@ namespace Money
             Repeater.Visible = true;
         }
 
-        public void UpdatePriceSpecial(string table, string symbol)
+        public void UpdatePriceSpecial(string symbol, string valuta)
         {
             //  Welcome to Alpha Vantage! Here is your API key: APA3UI90FWXJA9IM
             //  string ApiURL = "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=MSFT&interval=1min&apikey=APA3UI90FWXJA9IM";
@@ -296,6 +326,7 @@ namespace Money
 
             //var symbol = "TSLA";
             var apiKey = "APA3UI90FWXJA9IM";
+            decimal rate = 1;
             //var MultiPrices = $"https://www.alphavantage.co/query?function=BATCH_STOCK_QUOTES&apikey={apiKey}&symbols=MSFT,AAPL,FB&datatype=csv".GetStringFromUrl().FromCsv<List<AlphaVantageBatchData>>();
             //var Symb = MultiPrices.First().symbol;
 
@@ -303,7 +334,14 @@ namespace Money
             {
                 var Prices = $"https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol={symbol}&interval=1min&apikey={apiKey}&datatype=csv".GetStringFromUrl().FromCsv<List<AlphaVantageData>>();
                 var CurrentOpenPrice = Prices.First().Open;
-                UpdateStock(symbol, CurrentOpenPrice);
+
+                if (string.Compare(valuta, "SEK") != 0)
+                {
+                    rate = ConvertExchangeRates(valuta);
+                }
+
+                UpdateInvestment(symbol, CurrentOpenPrice, rate);
+                rate = 1;
                                 
                 Logger("DEBUG", symbol + " " + CurrentOpenPrice);
             }
@@ -314,26 +352,32 @@ namespace Money
 
         }
 
-        public async void UpdatePrice(string table, string symbol)
+        public async void UpdatePrice(string symbol, string valuta)
         {
 
             // key: bo5suuvrh5rbvm1sl1t0   https://finnhub.io/dashboard
             // https://finnhub.io/api/v1/quote?symbol=AAPL&token=bo5suuvrh5rbvm1sl1t0
           
-            string apiKey = "";
-
+            string apiKey = "bo5suuvrh5rbvm1sl1t0";
             HttpClient client = new HttpClient();
+            decimal rate = 1;
 
             try
             {
-
                 string url = $"https://finnhub.io/api/v1/quote?symbol={symbol}&token={apiKey}";
 
                 string responseBody = await client.GetStringAsync(url);
                 FinnhubData StockData = JsonConvert.DeserializeObject<FinnhubData>(responseBody);
                 decimal CurrentOpenPrice = StockData.C;
 
-                UpdateStock(symbol, CurrentOpenPrice);
+                if (string.Compare(valuta, "SEK") != 0)
+                {
+                    rate = ConvertExchangeRates(valuta);
+                }
+
+
+                UpdateInvestment(symbol, CurrentOpenPrice, rate);
+                rate = 1;
                 Logger("DEBUG", symbol + " " + CurrentOpenPrice);
             }
 
@@ -345,6 +389,32 @@ namespace Money
             catch (Exception ex)
             {
                 Logger("ERROR", "UpdatePrice function. Symbol: " + symbol + " " + ex.Message);
+            }
+
+            
+        }
+
+        public decimal ConvertExchangeRates(string Valuta)
+        {
+            //https://api.exchangeratesapi.io/latest?base=USD
+
+            string url = $"https://api.exchangeratesapi.io/latest?base={Valuta}";
+            var client = new System.Net.WebClient();
+
+            try
+            {
+                string responseBody = client.DownloadString(url);
+                int position = responseBody.IndexOf("SEK");
+                string substring = responseBody.Substring(position + 5, 20);
+                int endposition = substring.IndexOf(",");
+                string rate = substring.Substring(0, endposition - 1);
+                return decimal.Parse(rate);
+
+            }
+            catch (Exception ex)
+            {
+                Logger("ERROR", "Problem med att hämta Exchange rates " + ex.Message);
+                return 0;
             }
 
         }
@@ -373,16 +443,17 @@ namespace Money
 
         protected void Repeater_ItemCommand(object source, RepeaterCommandEventArgs e)
         {
-            // Get the argument.
-            String argument = (String)e.CommandArgument;
             String action = (String)e.CommandName;
             string table = ViewState["Table"].ToString();
 
+            
 
             if (action == "Sort")
             {
 
-                ViewState["Sort"] = argument;
+                String kolumn = e.CommandArgument.ToString();
+
+                ViewState["Sort"] = kolumn;
                 string sortorder = ViewState["SortOder"].ToString();
 
                 //Sort out the sort order ;-)
@@ -412,13 +483,17 @@ namespace Money
             if (action == "UpdateStockPrice")
             {
 
+                String[] arguments = e.CommandArgument.ToString().Split(new char[] { ',' });
+                string symbol = arguments[0];
+                string valuta = arguments[1];
+
                 string[] Specialaktier = WebConfigurationManager.AppSettings["SpecialAktier"].Split(',');
 
                 bool special = false;
 
                 foreach (string aktie in Specialaktier)
                 {
-                    if (aktie == argument)
+                    if (aktie == symbol)
                     {
                         special = true;
                     }
@@ -427,11 +502,11 @@ namespace Money
 
                 if (special == true)
                 {
-                    UpdatePriceSpecial(table, argument);
+                    UpdatePriceSpecial(symbol, valuta);
                 }
                 else
                 {
-                    UpdatePrice(table, argument);
+                    UpdatePrice(symbol, valuta);
                 }
 
 

@@ -20,9 +20,9 @@
         google.charts.setOnLoadCallback(drawChart);
         function drawChart() {
             var options = {
-                title: 'Food Items',
                 width: 600,
                 height: 400,
+                chartArea:{left:20,top:50,width:'50%',height:'75%'},
                 bar: { groupWidth: "95%" },
                 legend: { position: "none" },
                 isStacked: true
@@ -52,23 +52,21 @@
     <div  class="container">
       <div class="panel panel-info">
             <div class="panel-heading"> My Money </div>
-        </div>
+       
     <div class="panel-body">
     <form role="form" runat="server">
          <div class="row">
         <div class="col-sm-3 col-md-6 col-lg-5">
 
                 <div id="piechart"></div>
-
-                <p><button  class="btn btn-primary btn-lg" id="AF" runat="server" onserverclick="ShowTable">AF</button>
+                  <br /> <p></p>
+                 <p><button  class="btn btn-primary btn-lg" id="AF" runat="server" onserverclick="ShowTable">AF</button>
                  <button type="submit" class="btn btn-primary btn-lg" id="KF" runat="server" onserverclick="ShowTable">KF</button>
                  <button type="submit" class="btn btn-primary btn-lg" id="ISK" runat="server" onserverclick="ShowTable">ISK</button>
                  <button type="submit" class="btn btn-primary btn-lg" id="IPS" runat="server" onserverclick="ShowTable">IPS</button>
                  <button type="submit" class="btn btn-primary btn-lg" id="TJP" runat="server" onserverclick="ShowTable">TJP</button></p>
-                 <p><button type="submit" class="btn btn-primary btn-lg" id="IPS_TJP" runat="server" onserverclick="ShowTable">All Pension</button>
-                 <button type="submit" class="btn btn-primary btn-lg" id="AF_KF_ISK_IPS_TJP" runat="server" onserverclick="ShowTable">Alla Aktier</button></p>
-                 <p><button type="submit" class="btn btn-primary btn-lg" id="Crypto" runat="server" onserverclick="ShowTable">Krypto</button></p>
-                 <p><button type="submit" class="btn btn-primary btn-lg" id="TjanstePensioner" runat="server" onserverclick="ShowTable">Tjänstepensioner</button></p>
+                 <p><button type="submit" class="btn btn-primary btn-lg" id="Crypto" runat="server" onserverclick="ShowTable">Krypto</button>
+                 <button type="submit" class="btn btn-primary btn-lg" id="TjanstePensioner" runat="server" onserverclick="ShowTable">Tjänstepensioner</button></p>
 
              </div>
         <div class="col-sm-9 col-md-6 col-lg-7">
@@ -97,6 +95,11 @@
             
              </div>
              </div>
+
+             <div class="text-right mb-3">
+                 <button type="submit" class="btn btn-primary btn-lg" id="IPS_TJP" runat="server" onserverclick="ShowTable">All Pension</button>
+                 <button type="submit" class="btn btn-primary btn-lg " id="AF_KF_ISK_IPS_TJP" runat="server" onserverclick="ShowTable">Alla Aktier</button>
+                 </div>
       </div>     
 
 
@@ -119,7 +122,7 @@
             <td><%# DataBinder.Eval(Container.DataItem,"GAVKurs") %></td>
             <td><%# DataBinder.Eval(Container.DataItem,"Kurs") %></td>
             <td><%# DataBinder.Eval(Container.DataItem,"Summa") %></td>
-            <td><asp:ImageButton ImageUrl="Images\icon.png" runat="server" ID="UpdateInv" Text="Uppdatera Kurs" CommandName="UpdateStockPrice" CommandArgument=<%# DataBinder.Eval(Container.DataItem,"Symbol") %>/>  </td>
+            <td><asp:ImageButton ImageUrl="Images\icon.png" runat="server" ID="UpdateInv" CommandName="UpdateStockPrice" CommandArgument=<%# DataBinder.Eval(Container.DataItem,"Symbol") + "," + DataBinder.Eval(Container.DataItem,"Valuta") %>/>  </td>
             </tr>
         </ItemTemplate>
         <FooterTemplate>
@@ -128,6 +131,8 @@
     </asp:Repeater>
         </form>
         </div>
+        </div>
+
         </div>
 </body>
 </html>
