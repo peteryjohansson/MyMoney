@@ -113,6 +113,8 @@ namespace Money
                             totalsumma +=  (float)row[2];
                             kontantsumma += (float)row[3];
                         }
+                        
+              
 
                         totalSumField.Value = "MEGA Summa: " + totalsumma.ToString();
                         totalKontanterField.Value = "Kontanter: " + kontantsumma.ToString();
@@ -416,6 +418,60 @@ namespace Money
                 Logger("ERROR", "Problem med att hämta Exchange rates " + ex.Message);
                 return 0;
             }
+
+        }
+
+        public void UpdateAntal(string symbol, decimal antal)
+        {
+            string table = ViewState["Table"].ToString();
+            
+            string mysqlcmnd = "UPDATE money." + table + " SET Antal = " + quote + antal + quote + "WHERE SYMBOL = " + quote + symbol + quote + ";";
+
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(conString))
+                {
+                    connection.Open();
+                    MySqlCommand command = new MySqlCommand(mysqlcmnd, connection);
+                    command.ExecuteNonQuery();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger("ERROR", ex.Message);
+            }
+
+
+        }
+
+        public void ModalUpdateAntal(object sender, EventArgs e)
+        {
+
+            string Antal = NyttAntal.Value;
+            string sym = SymbolV.Value;
+            string table = ViewState["Table"].ToString();
+
+            string mysqlcmnd = "UPDATE money." + table + " SET Antal = " + quote + Antal + quote + "WHERE SYMBOL = " + quote + sym + quote + ";";
+            //  string mysqlcmnd = "UPDATE money.kf SET Antal = " + quote + "55" + quote + "WHERE SYMBOL = " + quote + "DIS" + quote + "; ";
+            //string mysqlcmnd = "SELECT * FROM money.kf;";
+
+            Logger("INFO", mysqlcmnd);
+
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(conString))
+                {
+                    connection.Open();
+                    MySqlCommand command = new MySqlCommand(mysqlcmnd, connection);
+                    command.ExecuteNonQuery();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger("ERROR", ex.Message);
+            }
+
+            GetTable(table);
 
         }
 
