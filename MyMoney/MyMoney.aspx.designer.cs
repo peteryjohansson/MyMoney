@@ -67,13 +67,13 @@ namespace Money {
         protected global::System.Web.UI.HtmlControls.HtmlButton Crypto;
         
         /// <summary>
-        /// TjanstePensioner control.
+        /// Tjanstepension control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlButton TjanstePensioner;
+        protected global::System.Web.UI.HtmlControls.HtmlButton Tjanstepension;
         
         /// <summary>
         /// RepeaterTS control.
@@ -148,6 +148,15 @@ namespace Money {
         protected global::System.Web.UI.HtmlControls.HtmlButton ModalSubmit;
         
         /// <summary>
+        /// tabellrubrik control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal tabellrubrik;
+        
+        /// <summary>
         /// Repeater control.
         /// </summary>
         /// <remarks>
@@ -155,5 +164,23 @@ namespace Money {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Repeater Repeater;
+        
+        /// <summary>
+        /// RepeaterPensionTabell control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Repeater RepeaterPensionTabell;
+        
+        /// <summary>
+        /// KFpiechart control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl KFpiechart;
     }
 }

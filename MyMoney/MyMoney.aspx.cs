@@ -88,6 +88,52 @@ namespace Money
             return chartData;
         }
 
+        [WebMethod]
+        public static List<object> GetKFChartData()
+        {
+            List<object> chartData = new List<object>();
+            chartData.Add(new object[]
+            {
+            "Depå", "Summa"
+            });
+
+            string conString = WebConfigurationManager.AppSettings["MySqlConnectionString"];
+            string mysqlcmnd = "SELECT Investment, Antal, SEKKurs FROM money.kf;";
+            DataTable dt = new DataTable();
+
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(conString))
+                {
+                    connection.Open();
+                    using (MySqlCommand myCommand = new MySqlCommand(mysqlcmnd, connection))
+                    {
+                        using (MySqlDataAdapter mysqlDa = new MySqlDataAdapter(myCommand))
+                        mysqlDa.Fill(dt);
+
+                        foreach (DataRow row in dt.Rows)
+                        {
+                            var Antal = row[1];
+                            var Kurs = row[2];
+
+                            int Summa = Convert.ToInt32(Antal) * Convert.ToInt32(Kurs);
+                            
+                            chartData.Add(new object[] { row[0], Summa});
+                        }
+                        
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Logger("ERROR", ex.Message);
+                // Här måste jag fundera ut hur jag ska fånga ett fel
+            }
+
+            return chartData;
+        }
+
+
         private void ShowSummary()
         {
 
@@ -182,6 +228,47 @@ namespace Money
                 Logger("ERROR", ex.Message);
             }
         }
+
+        private void GetTjanstPensionTabell(string table)
+        {
+
+            string mysqlcmnd = "SELECT * FROM money." + table + " order by Pensionsbolag;";
+            DataTable dt = new DataTable();
+            ViewState["Table"] = table;
+            ViewState["Sort"] = "Pensionsbolag";
+
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(conString))
+                {
+                    connection.Open();
+
+                    using (MySqlCommand myCommand = new MySqlCommand(mysqlcmnd, connection))
+                    {
+
+                        using (MySqlDataAdapter mysqlDa = new MySqlDataAdapter(myCommand))
+                            mysqlDa.Fill(dt);
+
+
+                        DataView dv = new DataView(dt);
+                        dv.Sort = ViewState["Sort"].ToString();
+
+                        //Om sortering har blivit begärt så behöver ta reda på i vilken ordning som det ska ske
+                        if (!dv.Sort.IsEmpty())
+                        {
+                            dv.Sort = dv.Sort + " " + ViewState["SortOder"];
+                        }
+                        RepeaterPensionTabell.DataSource = dv;
+                        RepeaterPensionTabell.DataBind();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger("ERROR", ex.Message);
+            }
+        }
+
 
         private void GetMultipleTable(string[] tables)
         {
@@ -307,16 +394,32 @@ namespace Money
         public void ShowTable(object sender, EventArgs e)
         {
             string Account = sender.GetObjectId().ToString();
-            
-            if (Account.Contains("_"))
+
+            if (Account.Contains("Tjanstepension"))
+            {
+                GetTjanstPensionTabell(Account);
+                Repeater.Visible = false;
+                KFpiechart.Visible = false;
+                RepeaterPensionTabell.Visible = true;
+            }
+
+            else if (Account.Contains("_"))
             {
                 string[] tables = Account.Split('_');
                 GetMultipleTable(tables);
+                Repeater.Visible = true;
+                RepeaterPensionTabell.Visible = false;
             }
             else
+            {
                 GetTable(Account);
+                Repeater.Visible = true;
+                RepeaterPensionTabell.Visible = false;
+            }
 
-            Repeater.Visible = true;
+            
+            tabellrubrik.Text = Account;
+            
         }
 
         public void UpdatePriceSpecial(string symbol, string valuta)
