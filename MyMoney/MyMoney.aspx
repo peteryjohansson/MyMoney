@@ -27,17 +27,16 @@
 </head>
 
 
- <%--   <script type="text/javascript">
+
+    <script type="text/javascript">
         google.charts.load("visualization", "1", { packages: ["corechart"] });
         google.charts.setOnLoadCallback(drawMainChart);
-
-        google.charts.setOnLoadCallback(drawKFChart);
 
         function drawMainChart() {
             var options = {
                 width: 600,
                 height: 400,
-                chartArea:{left:20,top:50,width:'50%',height:'75%'},
+                chartArea: { left: 20, top: 50, width: '50%', height: '75%' },
                 bar: { groupWidth: "95%" },
                 legend: { position: "none" },
                 isStacked: true
@@ -60,73 +59,8 @@
                     alert(r);
                 }
             });
-        } 
-
-            function drawKFChart() {
-            var options = {
-                width: 600,
-                height: 400,
-                chartArea:{left:20,top:50,width:'50%',height:'75%'},
-                bar: { groupWidth: "95%" },
-                legend: { position: "none" },
-                isStacked: true
-            };
-            $.ajax({
-                type: "POST",
-                url: "MyMoney.aspx/GetKFChartData",
-                data: '{}',
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                success: function (r) {
-                    var data = google.visualization.arrayToDataTable(r.d);
-                    var chart = new google.visualization.PieChart($("#KFpiechart")[0]);
-                    chart.draw(data, options);
-                },
-                failure: function (r) {
-                    alert(r);
-                },
-                error: function (r) {
-                    alert(r);
-                }
-            });
-        } 
-    </script>--%>
-
-
-
-       <script type="text/javascript">
-           google.charts.load("visualization", "1", { packages: ["corechart"] });
-           google.charts.setOnLoadCallback(drawMainChart);
-
-           function drawMainChart() {
-               var options = {
-                   width: 600,
-                   height: 400,
-                   chartArea: { left: 20, top: 50, width: '50%', height: '75%' },
-                   bar: { groupWidth: "95%" },
-                   legend: { position: "none" },
-                   isStacked: true
-               };
-               $.ajax({
-                   type: "POST",
-                   url: "MyMoney.aspx/GetChartData",
-                   data: '{}',
-                   contentType: "application/json; charset=utf-8",
-                   dataType: "json",
-                   success: function (r) {
-                       var data = google.visualization.arrayToDataTable(r.d);
-                       var chart = new google.visualization.PieChart($("#piechart")[0]);
-                       chart.draw(data, options);
-                   },
-                   failure: function (r) {
-                       alert(r);
-                   },
-                   error: function (r) {
-                       alert(r);
-                   }
-               });
-           }
-           </script>
+        }
+        </script>
 
 
  
@@ -140,8 +74,7 @@
       // Callback that creates and populates a data table, instantiates a dashboard, a range slider and a pie chart, passes in the data and draws it.
       function drawDashboard() {
 
-        
-        var dashboard = new google.visualization.Dashboard(document.getElementById('dashboard_div'));
+          var dashboard = new google.visualization.Dashboard(document.getElementById('dashboard_div'));
 
         // Create a range slider, passing some options
         var aktieRangeSlider = new google.visualization.ControlWrapper({
@@ -165,10 +98,14 @@
           }
         });
 
+          //GraphTable
+          //$("#GraphTable").val(xxx);
+          var rr = $("#GraphTable").val();
+
           $.ajax({
                    type: "POST",
                    url: "MyMoney.aspx/GetKFChartData",
-                   data: '{}',
+                     data: "{'Gtable': '" + rr + "'}",
                    contentType: "application/json; charset=utf-8",
                    dataType: "json",
                    success: function (r) {
@@ -190,58 +127,6 @@
  
 
  
-
-
-
-
-
-
-
-
-
-
-
-<%--       <script type="text/javascript">
-           $(document).ready(function () {
-             $(".btn").click(function () {
-         
-
-           google.charts.load("visualization", "1", { packages: ["corechart"] });
-           google.charts.setOnLoadCallback(drawKFChart);
-
-           function drawKFChart() {
-               var options = {
-                   width: 600,
-                   height: 400,
-                   chartArea: { left: 20, top: 50, width: '50%', height: '75%' },
-                   bar: { groupWidth: "95%" },
-                   legend: { position: "none" },
-                   isStacked: true
-               };
-               $.ajax({
-                   type: "POST",
-                   url: "MyMoney.aspx/GetKFChartData",
-                   data: '{}',
-                   contentType: "application/json; charset=utf-8",
-                   dataType: "json",
-                   success: function (r) {
-                       var data = google.visualization.arrayToDataTable(r.d);
-                       var chart = new google.visualization.PieChart($("#KFpiechart")[0]);
-                       chart.draw(data, options);
-                   },
-                   failure: function (r) {
-                       alert(r);
-                   },
-                   error: function (r) {
-                       alert(r);
-                   }
-               });
-                 }
-
-             });
-         });
-    </script>--%>
-
 
      <script>
          $(document).ready(function () {
@@ -393,7 +278,9 @@
             ErrorMessage="Ange en antal större än 0"
             runat="server"/>--%>
 
-        <div class="c"> <p class="bg-warning text-white"><asp:Literal ID="tabellrubrik" Text="" runat="server"/></p></div>
+        <br />
+        <div class="c"> <p class="bg-success text-white"><asp:Literal ID="tabellrubrik" Text="" runat="server"/></p></div>
+        <br />
 
         <asp:Repeater id="Repeater" runat="server" OnItemCommand="Repeater_ItemCommand">
         <HeaderTemplate>
@@ -401,7 +288,7 @@
                 <tr>
                 <th><asp:LinkButton runat="server" ID="SortByAktieButton" CommandName="Sort" Text="Aktie" CommandArgument="Investment" /></th>
                 <th><asp:LinkButton runat="server" ID="SortByAntalButton" CommandName="Sort" Text="Antal" CommandArgument="Antal" /></th>
-                <th><asp:LinkButton runat="server" ID="LinkButton1" CommandName="Sort" Text="GAVKurs" CommandArgument="GAVKurs" /></th>
+               <%-- <th><asp:LinkButton runat="server" ID="LinkButton1" CommandName="Sort" Text="GAVKurs" CommandArgument="GAVKurs" /></th>--%>
                 <th><asp:LinkButton runat="server" ID="LinkButton2" CommandName="Sort" Text="Kurs" CommandArgument="Kurs" /></th>
                 <th><asp:LinkButton runat="server" ID="LinkButton3" CommandName="Sort" Text="Summa" CommandArgument="Summa" /></th>
                     <th><asp:LinkButton runat="server" ID="LinkButton4" Text="Uppdatera" /></th>
@@ -412,7 +299,7 @@
             <tr>
             <td><%# DataBinder.Eval(Container.DataItem,"Investment") %> </td>
             <td><button type="button" AntalValue ="<%# DataBinder.Eval(Container.DataItem,"Antal") %>" SymbolValue ="<%# DataBinder.Eval(Container.DataItem,"Symbol") %>"  ID="myBtn" ><%# DataBinder.Eval(Container.DataItem,"Antal") %></button> </td>
-            <td><%# DataBinder.Eval(Container.DataItem,"GAVKurs") %></td>
+<%--            <td><%# DataBinder.Eval(Container.DataItem,"GAVKurs") %></td>--%>
             <td><%# DataBinder.Eval(Container.DataItem,"Kurs") %></td>
             <td><%# DataBinder.Eval(Container.DataItem,"Summa") %></td>
             <td><asp:ImageButton ImageUrl="Images\icon.png" runat="server" ID="UpdateInv" CommandName="UpdateStockPrice" CommandArgument=<%# DataBinder.Eval(Container.DataItem,"Symbol") + "," + DataBinder.Eval(Container.DataItem,"Valuta") %>/>  </td>
@@ -431,11 +318,11 @@
                 <tr>
                 <th><asp:LinkButton runat="server" ID="SortByAktieButton" CommandName="Sort" Text="Pensionsbolag" CommandArgument="Pensionsbolag" /></th>
    <%--             <th><asp:LinkButton runat="server" ID="SortByAntalButton" CommandName="Sort" Text="Antal" CommandArgument="Antal" /></th>--%>
-                <th><asp:LinkButton runat="server" ID="LinkButton1" CommandName="Sort" Text="Försäkringstyp" CommandArgument="Försäkringstyp" /></th>
-                <th><asp:LinkButton runat="server" ID="LinkButton2" CommandName="Sort" Text="Förvaltningstyp" CommandArgument="Förvaltningstyp" /></th>
-                <th><asp:LinkButton runat="server" ID="LinkButton5" CommandName="Sort" Text="Intjänathos" CommandArgument="Intjänathos" /></th>
+                <th><asp:LinkButton runat="server" ID="LinkButton1" CommandName="Sort" Text="Försäkring" CommandArgument="Försäkringstyp" /></th>
+                <th><asp:LinkButton runat="server" ID="LinkButton2" CommandName="Sort" Text="Typ" CommandArgument="Förvaltningstyp" /></th>
+                <th><asp:LinkButton runat="server" ID="LinkButton5" CommandName="Sort" Text="Hos" CommandArgument="Intjänathos" /></th>
                 <th><asp:LinkButton runat="server" ID="LinkButton6" CommandName="Sort" Text="Möjligtid" CommandArgument="Möjligtid" /></th>
-                <th><asp:LinkButton runat="server" ID="LinkButton12" CommandName="Sort" Text="UttagFrom" CommandArgument="UttagFrom" /></th>
+                <th><asp:LinkButton runat="server" ID="LinkButton12" CommandName="Sort" Text="From" CommandArgument="UttagFrom" /></th>
                 <th><asp:LinkButton runat="server" ID="LinkButton11" CommandName="Sort" Text="Avtaladtid" CommandArgument="Avtaladtid" /></th>
                 <th><asp:LinkButton runat="server" ID="LinkButton7" CommandName="Sort" Text="Skydd" CommandArgument="Skydd" /></th>
                 <th><asp:LinkButton runat="server" ID="LinkButton8" CommandName="Sort" Text="Skatt" CommandArgument="Skatt" /></th>
@@ -481,7 +368,7 @@
     </div>
  
 
-
+          <asp:HiddenField id="GraphTable" runat="server" Value ="kf"  />
 
         </form>
         </div>
@@ -490,7 +377,7 @@
 
 
 
-
+             
 
 
 </body>
@@ -501,6 +388,113 @@
 
 
 
+<%--       <script type="text/javascript">
+           $(document).ready(function () {
+             $(".btn").click(function () {
+         
+
+           google.charts.load("visualization", "1", { packages: ["corechart"] });
+           google.charts.setOnLoadCallback(drawKFChart);
+
+           function drawKFChart() {
+               var options = {
+                   width: 600,
+                   height: 400,
+                   chartArea: { left: 20, top: 50, width: '50%', height: '75%' },
+                   bar: { groupWidth: "95%" },
+                   legend: { position: "none" },
+                   isStacked: true
+               };
+               $.ajax({
+                   type: "POST",
+                   url: "MyMoney.aspx/GetKFChartData",
+                   data: '{}',
+                   contentType: "application/json; charset=utf-8",
+                   dataType: "json",
+                   success: function (r) {
+                       var data = google.visualization.arrayToDataTable(r.d);
+                       var chart = new google.visualization.PieChart($("#KFpiechart")[0]);
+                       chart.draw(data, options);
+                   },
+                   failure: function (r) {
+                       alert(r);
+                   },
+                   error: function (r) {
+                       alert(r);
+                   }
+               });
+                 }
+
+             });
+         });
+    </script>--%>
+
+
+
+ <%--   <script type="text/javascript">
+        google.charts.load("visualization", "1", { packages: ["corechart"] });
+        google.charts.setOnLoadCallback(drawMainChart);
+
+        google.charts.setOnLoadCallback(drawKFChart);
+
+        function drawMainChart() {
+            var options = {
+                width: 600,
+                height: 400,
+                chartArea:{left:20,top:50,width:'50%',height:'75%'},
+                bar: { groupWidth: "95%" },
+                legend: { position: "none" },
+                isStacked: true
+            };
+            $.ajax({
+                type: "POST",
+                url: "MyMoney.aspx/GetChartData",
+                data: '{}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (r) {
+                    var data = google.visualization.arrayToDataTable(r.d);
+                    var chart = new google.visualization.PieChart($("#piechart")[0]);
+                    chart.draw(data, options);
+                },
+                failure: function (r) {
+                    alert(r);
+                },
+                error: function (r) {
+                    alert(r);
+                }
+            });
+        } 
+
+            function drawKFChart() {
+            var options = {
+                width: 600,
+                height: 400,
+                chartArea:{left:20,top:50,width:'50%',height:'75%'},
+                bar: { groupWidth: "95%" },
+                legend: { position: "none" },
+                isStacked: true
+            };
+            $.ajax({
+                type: "POST",
+                url: "MyMoney.aspx/GetKFChartData",
+                data: '{}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (r) {
+                    var data = google.visualization.arrayToDataTable(r.d);
+                    var chart = new google.visualization.PieChart($("#KFpiechart")[0]);
+                    chart.draw(data, options);
+                },
+                failure: function (r) {
+                    alert(r);
+                },
+                error: function (r) {
+                    alert(r);
+                }
+            });
+        } 
+    </script>--%>
 
 
 

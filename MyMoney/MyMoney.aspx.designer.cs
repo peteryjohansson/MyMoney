@@ -7,11 +7,13 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Money {
-    
-    
-    public partial class _Default {
-        
+namespace Money
+{
+
+
+    public partial class _Default
+    {
+
         /// <summary>
         /// AF control.
         /// </summary>
@@ -20,7 +22,7 @@ namespace Money {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlButton AF;
-        
+
         /// <summary>
         /// KF control.
         /// </summary>
@@ -29,7 +31,7 @@ namespace Money {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlButton KF;
-        
+
         /// <summary>
         /// ISK control.
         /// </summary>
@@ -38,7 +40,7 @@ namespace Money {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlButton ISK;
-        
+
         /// <summary>
         /// IPS control.
         /// </summary>
@@ -47,7 +49,7 @@ namespace Money {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlButton IPS;
-        
+
         /// <summary>
         /// TJP control.
         /// </summary>
@@ -56,7 +58,7 @@ namespace Money {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlButton TJP;
-        
+
         /// <summary>
         /// Crypto control.
         /// </summary>
@@ -65,7 +67,7 @@ namespace Money {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlButton Crypto;
-        
+
         /// <summary>
         /// Tjanstepension control.
         /// </summary>
@@ -74,7 +76,7 @@ namespace Money {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlButton Tjanstepension;
-        
+
         /// <summary>
         /// RepeaterTS control.
         /// </summary>
@@ -83,7 +85,7 @@ namespace Money {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Repeater RepeaterTS;
-        
+
         /// <summary>
         /// totalKontanterField control.
         /// </summary>
@@ -92,7 +94,7 @@ namespace Money {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlInputText totalKontanterField;
-        
+
         /// <summary>
         /// totalSumField control.
         /// </summary>
@@ -101,7 +103,7 @@ namespace Money {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlInputText totalSumField;
-        
+
         /// <summary>
         /// IPS_TJP control.
         /// </summary>
@@ -110,7 +112,7 @@ namespace Money {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlButton IPS_TJP;
-        
+
         /// <summary>
         /// AF_KF_ISK_IPS_TJP control.
         /// </summary>
@@ -119,7 +121,7 @@ namespace Money {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlButton AF_KF_ISK_IPS_TJP;
-        
+
         /// <summary>
         /// SymbolV control.
         /// </summary>
@@ -128,7 +130,7 @@ namespace Money {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlInputText SymbolV;
-        
+
         /// <summary>
         /// NyttAntal control.
         /// </summary>
@@ -137,7 +139,7 @@ namespace Money {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlInputText NyttAntal;
-        
+
         /// <summary>
         /// ModalSubmit control.
         /// </summary>
@@ -146,7 +148,7 @@ namespace Money {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlButton ModalSubmit;
-        
+
         /// <summary>
         /// tabellrubrik control.
         /// </summary>
@@ -155,7 +157,7 @@ namespace Money {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal tabellrubrik;
-        
+
         /// <summary>
         /// Repeater control.
         /// </summary>
@@ -164,7 +166,7 @@ namespace Money {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Repeater Repeater;
-        
+
         /// <summary>
         /// RepeaterPensionTabell control.
         /// </summary>
@@ -173,14 +175,14 @@ namespace Money {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Repeater RepeaterPensionTabell;
-        
+
         /// <summary>
-        /// KFpiechart control.
+        /// GraphTable control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl KFpiechart;
+        protected global::System.Web.UI.WebControls.HiddenField GraphTable;
     }
 }

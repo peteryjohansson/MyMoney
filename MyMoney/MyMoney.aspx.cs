@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using ServiceStack;
 using ServiceStack.Text;
 using System.Web.Services;
+using System.Web.Script.Services;
 
 //drpDownNames.DataSource = dt;
 //drpDownNames.DataTextField = dt.Columns["Investment"].ToString();
@@ -55,7 +56,7 @@ namespace Money
             string conString = WebConfigurationManager.AppSettings["MySqlConnectionString"];
             string mysqlcmnd = "CALL `money`.`get_sums`();";
             DataTable dt = new DataTable();
-                        
+
             try
             {
                 using (MySqlConnection connection = new MySqlConnection(conString))
@@ -64,13 +65,13 @@ namespace Money
                     using (MySqlCommand myCommand = new MySqlCommand(mysqlcmnd, connection))
                     {
                         using (MySqlDataAdapter mysqlDa = new MySqlDataAdapter(myCommand))
-                        mysqlDa.Fill(dt);
+                            mysqlDa.Fill(dt);
 
-                        var totalsumma =dt.Rows[0][1];
+                        var totalsumma = dt.Rows[0][1];
                         var kontantsumma = dt.Rows[1][1];
                         var teslasumma = dt.Rows[2][1];
 
-                       int aktiersumma = Convert.ToInt32(totalsumma) - Convert.ToInt32(kontantsumma);
+                        int aktiersumma = Convert.ToInt32(totalsumma) - Convert.ToInt32(kontantsumma) - Convert.ToInt32(teslasumma);
 
                         chartData.Add(new object[] { "Aktier", aktiersumma });
                         chartData.Add(new object[] { "Kontanter", kontantsumma });
@@ -81,16 +82,19 @@ namespace Money
             }
             catch (Exception ex)
             {
-               // Logger("ERROR", ex.Message);
-              // Här måste jag fundera ut hur jag ska fånga ett fel
+                // Logger("ERROR", ex.Message);
+                // Här måste jag fundera ut hur jag ska fånga ett fel
             }
 
             return chartData;
         }
 
         [WebMethod]
-        public static List<object> GetKFChartData()
+        
+        public static List<object> GetKFChartData(string Gtable)
         {
+
+
             List<object> chartData = new List<object>();
             chartData.Add(new object[]
             {
@@ -98,7 +102,7 @@ namespace Money
             });
 
             string conString = WebConfigurationManager.AppSettings["MySqlConnectionString"];
-            string mysqlcmnd = "SELECT Investment, Antal, SEKKurs FROM money.kf;";
+            string mysqlcmnd = "SELECT Investment, Antal, SEKKurs FROM money." + Gtable + ";";
             DataTable dt = new DataTable();
 
             try
@@ -136,7 +140,7 @@ namespace Money
 
         private void ShowSummary()
         {
-
+            
             string mysqlcmnd = "SELECT * FROM money.total";
             DataTable dt = new DataTable();
             float totalsumma = 0;
@@ -269,7 +273,6 @@ namespace Money
             }
         }
 
-
         private void GetMultipleTable(string[] tables)
         {
 
@@ -399,7 +402,7 @@ namespace Money
             {
                 GetTjanstPensionTabell(Account);
                 Repeater.Visible = false;
-                KFpiechart.Visible = false;
+                //KFpiechart.Visible = false;
                 RepeaterPensionTabell.Visible = true;
             }
 
@@ -413,11 +416,11 @@ namespace Money
             else
             {
                 GetTable(Account);
+                GraphTable.Value = Account;
                 Repeater.Visible = true;
                 RepeaterPensionTabell.Visible = false;
             }
-
-            
+                        
             tabellrubrik.Text = Account;
             
         }
