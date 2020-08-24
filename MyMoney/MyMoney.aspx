@@ -43,7 +43,7 @@
             };
             $.ajax({
                 type: "POST",
-                url: "MyMoney.aspx/GetChartData",
+                url: "MyMoney.aspx/GetTotalChartData",
                 data: '{}',
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
@@ -98,14 +98,12 @@
           }
         });
 
-          //GraphTable
-          //$("#GraphTable").val(xxx);
-          var rr = $("#GraphTable").val();
+           var ta = $("#GraphTable").val();
 
           $.ajax({
                    type: "POST",
-                   url: "MyMoney.aspx/GetKFChartData",
-                     data: "{'Gtable': '" + rr + "'}",
+                   url: "MyMoney.aspx/GetChartData",
+                     data: "{'Gtable': '" + ta + "'}",
                    contentType: "application/json; charset=utf-8",
                    dataType: "json",
                    success: function (r) {
@@ -229,6 +227,7 @@
                  <div class="text-right mb-3">
                      <button type="submit" class="btn btn-primary btn-lg" id="IPS_TJP" runat="server" onserverclick="ShowTable">All Pension</button>
                      <button type="submit" class="btn btn-primary btn-lg " id="AF_KF_ISK_IPS_TJP" runat="server" onserverclick="ShowTable">Alla Aktier</button>
+                     <button type="submit" class="btn btn-primary btn-lg " id="AF_KF_ISK" runat="server" onserverclick="ShowTable">Alla icke Pension</button>
                  </div>
              </div>
       </div>     

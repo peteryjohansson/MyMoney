@@ -45,7 +45,7 @@ namespace Money
         }
 
         [WebMethod]
-        public static List<object> GetChartData()
+        public static List<object> GetTotalChartData()
         {
             List<object> chartData = new List<object>();
             chartData.Add(new object[]
@@ -91,7 +91,7 @@ namespace Money
 
         [WebMethod]
         
-        public static List<object> GetKFChartData(string Gtable)
+        public static List<object> GetChartData(string Gtable)
         {
 
 
@@ -120,7 +120,8 @@ namespace Money
                             var Antal = row[1];
                             var Kurs = row[2];
 
-                            int Summa = Convert.ToInt32(Antal) * Convert.ToInt32(Kurs);
+                            double TempSumma = Convert.ToDouble(Antal) * Convert.ToDouble(Kurs);
+                            int Summa = Convert.ToInt32(TempSumma);
                             
                             chartData.Add(new object[] { row[0], Summa});
                         }
@@ -402,7 +403,6 @@ namespace Money
             {
                 GetTjanstPensionTabell(Account);
                 Repeater.Visible = false;
-                //KFpiechart.Visible = false;
                 RepeaterPensionTabell.Visible = true;
             }
 
