@@ -14,6 +14,7 @@ using ServiceStack.Text;
 using System.Web.Services;
 using System.Web.Script.Services;
 
+
 //drpDownNames.DataSource = dt;
 //drpDownNames.DataTextField = dt.Columns["Investment"].ToString();
 //drpDownNames.DataValueField = dt.Columns["Antal"].ToString();
@@ -23,7 +24,8 @@ namespace Money
 {
     public partial class _Default : Page
     {
-        string conString = WebConfigurationManager.AppSettings["MySqlConnectionString"];
+        //string conString = WebConfigurationManager.AppSettings["MySqlConnectionString"];
+        string SQLconString = WebConfigurationManager.AppSettings["SqlConnectionString"];
         const string quote = "\"";
 
         protected void Page_Load(object sender, EventArgs e)
@@ -53,26 +55,26 @@ namespace Money
             "Depå", "Summa"
             });
 
-            string conString = WebConfigurationManager.AppSettings["MySqlConnectionString"];
-            string mysqlcmnd = "CALL `money`.`get_sums`();";
+            string SQLconString = WebConfigurationManager.AppSettings["SqlConnectionString"];
+            string sqlcmnd = "EXEC money.get_sums;";
             DataTable dt = new DataTable();
 
             try
             {
-                using (MySqlConnection connection = new MySqlConnection(conString))
+                using (SqlConnection connection = new SqlConnection(SQLconString))
                 {
                     connection.Open();
-                    using (MySqlCommand myCommand = new MySqlCommand(mysqlcmnd, connection))
+                    using (SqlCommand myCommand = new SqlCommand(sqlcmnd, connection))
                     {
-                        using (MySqlDataAdapter mysqlDa = new MySqlDataAdapter(myCommand))
-                            mysqlDa.Fill(dt);
-
-                        var totalsumma = dt.Rows[0][1];
-                        var kontantsumma = dt.Rows[1][1];
-                        var teslasumma = dt.Rows[2][1];
+                        using (SqlDataAdapter mysqlDa = new SqlDataAdapter(myCommand))
+                         mysqlDa.Fill(dt);
+                        
+                        var kontantsumma = dt.Rows[0][1];
+                        var teslasumma = dt.Rows[1][1];
+                        var totalsumma = dt.Rows[2][1];
 
                         int aktiersumma = Convert.ToInt32(totalsumma) - Convert.ToInt32(kontantsumma) - Convert.ToInt32(teslasumma);
-
+                                                
                         chartData.Add(new object[] { "Aktier", aktiersumma });
                         chartData.Add(new object[] { "Kontanter", kontantsumma });
                         chartData.Add(new object[] { "Tesla", teslasumma });
@@ -93,26 +95,24 @@ namespace Money
         
         public static List<object> GetChartData(string Gtable)
         {
-
-
             List<object> chartData = new List<object>();
             chartData.Add(new object[]
             {
             "Depå", "Summa"
             });
 
-            string conString = WebConfigurationManager.AppSettings["MySqlConnectionString"];
-            string mysqlcmnd = "SELECT Investment, Antal, SEKKurs FROM money." + Gtable + ";";
+            string SQLconString = WebConfigurationManager.AppSettings["SqlConnectionString"];
+            string sqlcmnd = "SELECT Investment, Antal, SEKKurs FROM money." + Gtable + ";";
             DataTable dt = new DataTable();
 
             try
             {
-                using (MySqlConnection connection = new MySqlConnection(conString))
+                using (SqlConnection connection = new SqlConnection(SQLconString))
                 {
                     connection.Open();
-                    using (MySqlCommand myCommand = new MySqlCommand(mysqlcmnd, connection))
+                    using (SqlCommand myCommand = new SqlCommand(sqlcmnd, connection))
                     {
-                        using (MySqlDataAdapter mysqlDa = new MySqlDataAdapter(myCommand))
+                        using (SqlDataAdapter mysqlDa = new SqlDataAdapter(myCommand))
                         mysqlDa.Fill(dt);
 
                         foreach (DataRow row in dt.Rows)
@@ -142,21 +142,21 @@ namespace Money
         private void ShowSummary()
         {
             
-            string mysqlcmnd = "SELECT * FROM money.total";
+            string sqlcmnd = "SELECT * FROM money.total";
             DataTable dt = new DataTable();
             float totalsumma = 0;
             float kontantsumma = 0;
             
             try
             {
-                using (MySqlConnection connection = new MySqlConnection(conString))
+                using (SqlConnection connection = new SqlConnection(SQLconString))
                 {
                     connection.Open();
 
-                    using (MySqlCommand myCommand = new MySqlCommand(mysqlcmnd, connection))
+                    using (SqlCommand myCommand = new SqlCommand(sqlcmnd, connection))
                     {
 
-                        using (MySqlDataAdapter mysqlDa = new MySqlDataAdapter(myCommand))
+                        using (SqlDataAdapter mysqlDa = new SqlDataAdapter(myCommand))
                         mysqlDa.Fill(dt);
                                                 
                         foreach (DataRow row in dt.Rows)
@@ -164,8 +164,6 @@ namespace Money
                             totalsumma +=  (float)row[2];
                             kontantsumma += (float)row[3];
                         }
-                        
-              
 
                         totalSumField.Value = "MEGA Summa: " + totalsumma.ToString();
                         totalKontanterField.Value = "Kontanter: " + kontantsumma.ToString();
@@ -179,27 +177,27 @@ namespace Money
             }
             catch (Exception ex)
             {
-                Logger("ERROR", ex.Message);
+                Logger("ERROR1", ex.Message);
             }
         }
 
         private void GetTable(string table)
         {
 
-            string mysqlcmnd = "SELECT * FROM money." + table + " order by Investment;";
+            string sqlcmnd = "SELECT * FROM money." + table + " order by Investment;";
             DataTable dt = new DataTable();
             ViewState["Table"] = table;
 
             try
             {
-                using (MySqlConnection connection = new MySqlConnection(conString))
+                using (SqlConnection connection = new SqlConnection(SQLconString))
                 {
                     connection.Open();
 
-                    using (MySqlCommand myCommand = new MySqlCommand(mysqlcmnd, connection))
+                    using (SqlCommand myCommand = new SqlCommand(sqlcmnd, connection))
                     {
 
-                        using (MySqlDataAdapter mysqlDa = new MySqlDataAdapter(myCommand))
+                        using (SqlDataAdapter mysqlDa = new SqlDataAdapter(myCommand))
                         mysqlDa.Fill(dt);
 
                         //Repeater.DataSource = dt;
@@ -230,30 +228,28 @@ namespace Money
             }
             catch (Exception ex)
             {
-                Logger("ERROR", ex.Message);
+                Logger("ERROR2", ex.Message);
             }
         }
 
         private void GetTjanstPensionTabell(string table)
         {
-
-            string mysqlcmnd = "SELECT * FROM money." + table + " order by Pensionsbolag;";
+            string sqlcmnd = "SELECT * FROM money." + table + " order by Pensionsbolag;";
             DataTable dt = new DataTable();
             ViewState["Table"] = table;
             ViewState["Sort"] = "Pensionsbolag";
 
             try
             {
-                using (MySqlConnection connection = new MySqlConnection(conString))
+                using (SqlConnection connection = new SqlConnection(SQLconString))
                 {
                     connection.Open();
 
-                    using (MySqlCommand myCommand = new MySqlCommand(mysqlcmnd, connection))
+                    using (SqlCommand myCommand = new SqlCommand(sqlcmnd, connection))
                     {
 
-                        using (MySqlDataAdapter mysqlDa = new MySqlDataAdapter(myCommand))
+                        using (SqlDataAdapter mysqlDa = new SqlDataAdapter(myCommand))
                             mysqlDa.Fill(dt);
-
 
                         DataView dv = new DataView(dt);
                         dv.Sort = ViewState["Sort"].ToString();
@@ -270,7 +266,7 @@ namespace Money
             }
             catch (Exception ex)
             {
-                Logger("ERROR", ex.Message);
+                Logger("ERROR3", ex.Message);
             }
         }
 
@@ -279,29 +275,29 @@ namespace Money
 
             //Bygg upp SQL kommandot med UNION
             //select * from money.tjp union select * from money.kf; 
-            string mysqlcmnd = "SELECT * FROM money." +tables[0];
+            string sqlcmnd = "SELECT * FROM money." +tables[0];
 
             ViewState["Table"] = tables[0];
 
             for (int i = 1; i < tables.Length; i++)
             {
-                mysqlcmnd = mysqlcmnd + " union select * from money." + tables[i];
+                sqlcmnd = sqlcmnd + " union select * from money." + tables[i];
                 ViewState["Table"] = ViewState["Table"] + "_" + tables[i];
             }
                 
-            mysqlcmnd = mysqlcmnd  + " order by Investment;";
+            sqlcmnd = sqlcmnd  + " order by Investment;";
             DataTable dt = new DataTable();
             
             try
             {
-                using (MySqlConnection connection = new MySqlConnection(conString))
+                using (SqlConnection connection = new SqlConnection(SQLconString))
                 {
                     connection.Open();
 
-                    using (MySqlCommand myCommand = new MySqlCommand(mysqlcmnd, connection))
+                    using (SqlCommand myCommand = new SqlCommand(sqlcmnd, connection))
                     {
 
-                        using (MySqlDataAdapter mysqlDa = new MySqlDataAdapter(myCommand))
+                        using (SqlDataAdapter mysqlDa = new SqlDataAdapter(myCommand))
                             mysqlDa.Fill(dt);
 
                         //Repeater.DataSource = dt;
@@ -332,7 +328,7 @@ namespace Money
             }
             catch (Exception ex)
             {
-                Logger("ERROR", ex.Message);
+                Logger("ERROR4", ex.Message);
             }
         }
 
@@ -361,20 +357,20 @@ namespace Money
         {
             string table = ViewState["Table"].ToString();
             decimal SEKKurs = Kurs * rate;
-            string mysqlcmnd = "UPDATE money." + table + " SET Kurs =  " + Kurs + ", SEKKURS = " + SEKKurs + " WHERE Symbol = " + quote + symbol + quote + ";";
+            string sqlcmnd = "UPDATE money." + table + " SET Kurs =  " + Kurs + ", SEKKURS = " + SEKKurs + " WHERE Symbol = '"  + symbol + " ';";
 
             try
             {
-                using (MySqlConnection connection = new MySqlConnection(conString))
+                using (SqlConnection connection = new SqlConnection(SQLconString))
                 {
                     connection.Open();
-                    MySqlCommand command = new MySqlCommand(mysqlcmnd, connection);
+                    SqlCommand command = new SqlCommand(sqlcmnd, connection);
                     command.ExecuteNonQuery();
                 }
             }
             catch (Exception ex)
             {
-                Logger("ERROR", ex.Message);
+                Logger("ERROR5", ex.Message);
             }
 
         }
@@ -455,7 +451,7 @@ namespace Money
             }
             catch (Exception ex)
             {
-                Logger("ERROR", symbol + " " + ex.Message);
+                Logger("ERROR6", symbol + " " + ex.Message);
             }
 
         }
@@ -483,7 +479,6 @@ namespace Money
                     rate = ConvertExchangeRates(valuta);
                 }
 
-
                 UpdateInvestment(symbol, CurrentOpenPrice, rate);
                 rate = 1;
                 Logger("DEBUG", symbol + " " + CurrentOpenPrice);
@@ -491,12 +486,12 @@ namespace Money
 
             catch (ArgumentNullException e)
             {
-                Logger("ERROR", "UpdatePrice function (argumentnullexception). Symbol: " + symbol + " " + e.Message);
+                Logger("ERROR7", "UpdatePrice function (argumentnullexception). Symbol: " + symbol + " " + e.Message);
             }
 
             catch (Exception ex)
             {
-                Logger("ERROR", "UpdatePrice function. Symbol: " + symbol + " " + ex.Message);
+                Logger("ERROR8", "UpdatePrice function. Symbol: " + symbol + " " + ex.Message);
             }
 
             
@@ -521,7 +516,7 @@ namespace Money
             }
             catch (Exception ex)
             {
-                Logger("ERROR", "Problem med att hämta Exchange rates " + ex.Message);
+                Logger("ERROR9", "Problem med att hämta Exchange rates " + ex.Message);
                 return 0;
             }
 
@@ -531,20 +526,20 @@ namespace Money
         {
             string table = ViewState["Table"].ToString();
             
-            string mysqlcmnd = "UPDATE money." + table + " SET Antal = " + quote + antal + quote + "WHERE SYMBOL = " + quote + symbol + quote + ";";
-
+            //string sqlcmnd = "UPDATE money." + table + " SET Antal = " + quote + antal + quote + "WHERE SYMBOL = " + quote + symbol + quote + ";";
+            string sqlcmnd = "UPDATE money." + table + " SET Antal = " + antal + " WHERE SYMBOL =  '" + symbol + "';";
             try
             {
-                using (MySqlConnection connection = new MySqlConnection(conString))
+                using (SqlConnection connection = new SqlConnection(SQLconString))
                 {
                     connection.Open();
-                    MySqlCommand command = new MySqlCommand(mysqlcmnd, connection);
+                    SqlCommand command = new SqlCommand(sqlcmnd, connection);
                     command.ExecuteNonQuery();
                 }
             }
             catch (Exception ex)
             {
-                Logger("ERROR", ex.Message);
+                Logger("ERROR10", ex.Message);
             }
 
 
@@ -556,25 +551,25 @@ namespace Money
             string Antal = NyttAntal.Value;
             string sym = SymbolV.Value;
             string table = ViewState["Table"].ToString();
-
-            string mysqlcmnd = "UPDATE money." + table + " SET Antal = " + quote + Antal + quote + "WHERE SYMBOL = " + quote + sym + quote + ";";
+            
+            string sqlcmnd = "UPDATE money." + table + " SET Antal = " + Antal + " WHERE SYMBOL =  '" + sym + "';";
             //  string mysqlcmnd = "UPDATE money.kf SET Antal = " + quote + "55" + quote + "WHERE SYMBOL = " + quote + "DIS" + quote + "; ";
             //string mysqlcmnd = "SELECT * FROM money.kf;";
 
-            Logger("INFO", mysqlcmnd);
+            Logger("INFO", sqlcmnd);
 
             try
             {
-                using (MySqlConnection connection = new MySqlConnection(conString))
+                using (SqlConnection connection = new SqlConnection(SQLconString))
                 {
                     connection.Open();
-                    MySqlCommand command = new MySqlCommand(mysqlcmnd, connection);
+                    SqlCommand command = new SqlCommand(sqlcmnd, connection);
                     command.ExecuteNonQuery();
                 }
             }
             catch (Exception ex)
             {
-                Logger("ERROR", ex.Message);
+                Logger("ERROR11", ex.Message);
             }
 
             GetTable(table);
@@ -585,12 +580,12 @@ namespace Money
         {
             try
             {
-                using (MySqlConnection connection = new MySqlConnection(conString))
+                using (SqlConnection connection = new SqlConnection(SQLconString))
                 {
                     connection.Open();
 
-                    string CommandText = "INSERT INTO log set type = @type, message = @message";
-                    MySqlCommand command = new MySqlCommand(CommandText, connection);
+                    string CommandText = "INSERT INTO money.log (type,message) values(@type,@message)";
+                    SqlCommand command = new SqlCommand(CommandText, connection);
 
                     command.Parameters.AddWithValue("@type", type);
                     command.Parameters.AddWithValue("@message", message);
