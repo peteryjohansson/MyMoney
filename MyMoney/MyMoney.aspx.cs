@@ -70,14 +70,16 @@ namespace Money
                          mysqlDa.Fill(dt);
                         
                         var kontantsumma = dt.Rows[0][1];
-                        var teslasumma = dt.Rows[1][1];
-                        var totalsumma = dt.Rows[2][1];
+                        var kryptosumma = dt.Rows[1][1];
+                        var teslasumma = dt.Rows[2][1];
+                        var totalsumma = dt.Rows[3][1];
 
                         int aktiersumma = Convert.ToInt32(totalsumma) - Convert.ToInt32(kontantsumma) - Convert.ToInt32(teslasumma);
                                                 
                         chartData.Add(new object[] { "Aktier", aktiersumma });
                         chartData.Add(new object[] { "Kontanter", kontantsumma });
                         chartData.Add(new object[] { "Tesla", teslasumma });
+                        chartData.Add(new object[] { "Krypto", kryptosumma});
 
                     }
                 }
