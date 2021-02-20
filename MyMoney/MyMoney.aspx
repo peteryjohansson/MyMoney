@@ -63,10 +63,49 @@
         </script>
 
 
- 
 
-   <!--Load the AJAX API-->
-    <script type="text/javascript">
+
+     <script type="text/javascript">
+         google.charts.load('current', { 'packages': ['bar'] });
+         google.charts.setOnLoadCallback(drawMainChart);
+
+       function drawMainChart() {
+             var options = {
+                 width: 1000,
+                 height: 400,
+                 chartArea: { left: 20, top: 50, width: '50%', height: '75%' },
+                 bar: { groupWidth: "95%" },
+                 legend: { position: "none" },
+                 isStacked: false
+             };
+
+             var ta = $("#GraphTable").val();
+
+             $.ajax({
+                 type: "POST",
+                 url: "MyMoney.aspx/GetChartData",
+                 data: "{'Gtable': '" + ta + "'}",
+                 contentType: "application/json; charset=utf-8",
+                 dataType: "json",
+                 success: function (r) {
+                     var data = google.visualization.arrayToDataTable(r.d);
+                     var chart = new google.charts.Bar(document.getElementById('columnchart_material'));
+                     chart.draw(data, google.charts.Bar.convertOptions(options));
+                 },
+                 failure: function (r) {
+                     alert(r);
+                 },
+                 error: function (r) {
+                     alert(r);
+                 }
+             });
+         }
+     </script>
+
+
+<%--    Den här använde jag för att ha en slide för en piechart--%>
+
+<%-- <script type="text/javascript">
 
       google.charts.load('current', {'packages':['corechart', 'controls']});
       google.charts.setOnLoadCallback(drawDashboard);
@@ -122,38 +161,7 @@
 
       }
     </script>
- 
-
- 
-
-     <script>
-         $(document).ready(function () {
-             $(".btn").click(function () {
-                 google.load("visualization", "1", { packages: ["corechart"], callback: drawChart });
-                 function drawChart() {
-
-                     var data = google.visualization.arrayToDataTable([
-                         ['Task', 'Hours per Day'],
-                         ['Work', 11],
-                         ['Eat', 2],
-                         ['Commute', 2],
-                         ['Watch TV', 2],
-                         ['Sleep', 7]
-                     ]);
-
-                     var options = {
-                         title: 'My Daily Activities'
-                     };
-
-                     var chart = new google.visualization.PieChart(document.getElementById('pchart'));
-
-                     chart.draw(data, options);
-                 }
-             });
-         });
-    </script>
-
-
+ --%>
 
 
 <script>  
@@ -172,8 +180,6 @@
     </script> 
 
 
-
-
 <body>
     <div  class="container">
       <div class="panel panel-info">
@@ -185,6 +191,7 @@
         <div class="col-sm-3 col-md-6 col-lg-5">
 
                 <div id="piechart"></div>
+
                   <br /> <p></p>
                  <p><button  class="btn btn-primary btn-lg" id="AF" runat="server" onserverclick="ShowTable">AF</button>
                  <button type="submit" class="btn btn-primary btn-lg" id="KF" runat="server" onserverclick="ShowTable" >KF</button>
@@ -225,9 +232,9 @@
              </div>
              <div class="col-sm-9 col-md-6 col-lg-7">
                  <div class="text-right mb-3">
-                     <button type="submit" class="btn btn-primary btn-lg" id="IPS_TJP" runat="server" onserverclick="ShowTable">All Pension</button>
-                     <button type="submit" class="btn btn-primary btn-lg " id="AF_KF_ISK_IPS_TJP" runat="server" onserverclick="ShowTable">Alla Aktier</button>
-                     <button type="submit" class="btn btn-primary btn-lg " id="AF_KF_ISK" runat="server" onserverclick="ShowTable">Alla icke Pension</button>
+                     <button type="submit" class="btn btn-primary btn-lg" id="AllaPension" runat="server" onserverclick="ShowTable">All Pension</button>
+                     <button type="submit" class="btn btn-primary btn-lg " id="AllaAktierCompound" runat="server" onserverclick="ShowTable">Alla Aktier</button>
+                     <button type="submit" class="btn btn-primary btn-lg " id="AllaIckePension" runat="server" onserverclick="ShowTable">Alla icke Pension</button>
                  </div>
              </div>
       </div>     
@@ -359,12 +366,18 @@
 <div id="KFpiechart" class="piechart">Chart would be plotted here</div>--%>
 
 
-           <!--Div that will hold the dashboard-->
+
+           <div id="columnchart_material"></div>
+   
+
+
+
+<%--              <!--Div that will hold the dashboard-->
     <div id="dashboard_div">
       <!--Divs that will hold each control and chart-->
       <div id="filter_div"></div>
       <div id="chart_div"></div>
-    </div>
+    </div>--%>
  
 
           <asp:HiddenField id="GraphTable" runat="server" Value ="kf"  />
@@ -381,119 +394,6 @@
 
 </body>
 </html>
-
-
-
-
-
-
-<%--       <script type="text/javascript">
-           $(document).ready(function () {
-             $(".btn").click(function () {
-         
-
-           google.charts.load("visualization", "1", { packages: ["corechart"] });
-           google.charts.setOnLoadCallback(drawKFChart);
-
-           function drawKFChart() {
-               var options = {
-                   width: 600,
-                   height: 400,
-                   chartArea: { left: 20, top: 50, width: '50%', height: '75%' },
-                   bar: { groupWidth: "95%" },
-                   legend: { position: "none" },
-                   isStacked: true
-               };
-               $.ajax({
-                   type: "POST",
-                   url: "MyMoney.aspx/GetKFChartData",
-                   data: '{}',
-                   contentType: "application/json; charset=utf-8",
-                   dataType: "json",
-                   success: function (r) {
-                       var data = google.visualization.arrayToDataTable(r.d);
-                       var chart = new google.visualization.PieChart($("#KFpiechart")[0]);
-                       chart.draw(data, options);
-                   },
-                   failure: function (r) {
-                       alert(r);
-                   },
-                   error: function (r) {
-                       alert(r);
-                   }
-               });
-                 }
-
-             });
-         });
-    </script>--%>
-
-
-
- <%--   <script type="text/javascript">
-        google.charts.load("visualization", "1", { packages: ["corechart"] });
-        google.charts.setOnLoadCallback(drawMainChart);
-
-        google.charts.setOnLoadCallback(drawKFChart);
-
-        function drawMainChart() {
-            var options = {
-                width: 600,
-                height: 400,
-                chartArea:{left:20,top:50,width:'50%',height:'75%'},
-                bar: { groupWidth: "95%" },
-                legend: { position: "none" },
-                isStacked: true
-            };
-            $.ajax({
-                type: "POST",
-                url: "MyMoney.aspx/GetChartData",
-                data: '{}',
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                success: function (r) {
-                    var data = google.visualization.arrayToDataTable(r.d);
-                    var chart = new google.visualization.PieChart($("#piechart")[0]);
-                    chart.draw(data, options);
-                },
-                failure: function (r) {
-                    alert(r);
-                },
-                error: function (r) {
-                    alert(r);
-                }
-            });
-        } 
-
-            function drawKFChart() {
-            var options = {
-                width: 600,
-                height: 400,
-                chartArea:{left:20,top:50,width:'50%',height:'75%'},
-                bar: { groupWidth: "95%" },
-                legend: { position: "none" },
-                isStacked: true
-            };
-            $.ajax({
-                type: "POST",
-                url: "MyMoney.aspx/GetKFChartData",
-                data: '{}',
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                success: function (r) {
-                    var data = google.visualization.arrayToDataTable(r.d);
-                    var chart = new google.visualization.PieChart($("#KFpiechart")[0]);
-                    chart.draw(data, options);
-                },
-                failure: function (r) {
-                    alert(r);
-                },
-                error: function (r) {
-                    alert(r);
-                }
-            });
-        } 
-    </script>--%>
 
 
 

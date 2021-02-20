@@ -7,7 +7,6 @@ using System.Net.Http;
 using System.Web.Configuration;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using ServiceStack;
 using ServiceStack.Text;
@@ -104,7 +103,7 @@ namespace Money
             });
 
             string SQLconString = WebConfigurationManager.AppSettings["SqlConnectionString"];
-            string sqlcmnd = "SELECT Investment, Antal, SEKKurs FROM money." + Gtable + ";";
+            string sqlcmnd = "SELECT REPLACE(Symbol,'.ST',''), Antal, SEKKurs FROM money." + Gtable + " ORDER BY Investment;";
             DataTable dt = new DataTable();
 
             try
@@ -115,7 +114,9 @@ namespace Money
                     using (SqlCommand myCommand = new SqlCommand(sqlcmnd, connection))
                     {
                         using (SqlDataAdapter mysqlDa = new SqlDataAdapter(myCommand))
-                        mysqlDa.Fill(dt);
+                            mysqlDa.Fill(dt);
+
+                        dt.Columns.Add("Summa", typeof(float));
 
                         foreach (DataRow row in dt.Rows)
                         {
@@ -124,10 +125,23 @@ namespace Money
 
                             double TempSumma = Convert.ToDouble(Antal) * Convert.ToDouble(Kurs);
                             int Summa = Convert.ToInt32(TempSumma);
+
+                            row[3] = Convert.ToInt32(TempSumma);
+
                             
-                            chartData.Add(new object[] { row[0], Summa});
                         }
-                        
+
+                        dt.DefaultView.Sort = "Summa";
+                        dt = dt.DefaultView.ToTable();
+
+                        foreach (DataRow row in dt.Rows)
+                        {
+                            chartData.Add(new object[] { row[0], row[3] });
+                        }
+
+
+
+
                     }
                 }
             }
@@ -205,13 +219,15 @@ namespace Money
                         //Repeater.DataSource = dt;
                         dt.Columns.Add("Summa", typeof(float));
 
+                        int columnCount = dt.Columns.Count;
+
                         foreach (DataRow row in dt.Rows)
                         {
                             var Antal = row[2];
                             var Kurs = row[4];
                             
                             float Summa = (float)Antal * (float)Kurs;
-                            row[12] = Math.Round(Summa, 0);
+                            row[columnCount-1] = Math.Round(Summa, 0);
                         }
 
                         DataView dv = new DataView(dt);

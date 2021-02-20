@@ -105,31 +105,31 @@ namespace Money
         protected global::System.Web.UI.HtmlControls.HtmlInputText totalSumField;
 
         /// <summary>
-        /// IPS_TJP control.
+        /// AllaPension control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlButton IPS_TJP;
+        protected global::System.Web.UI.HtmlControls.HtmlButton AllaPension;
 
         /// <summary>
-        /// AF_KF_ISK_IPS_TJP control.
+        /// AllaAktierCompound control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlButton AF_KF_ISK_IPS_TJP;
+        protected global::System.Web.UI.HtmlControls.HtmlButton AllaAktierCompound;
 
         /// <summary>
-        /// AF_KF_ISK control.
+        /// AllaIckePension control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlButton AF_KF_ISK;
+        protected global::System.Web.UI.HtmlControls.HtmlButton AllaIckePension;
 
         /// <summary>
         /// SymbolV control.
