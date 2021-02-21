@@ -72,8 +72,8 @@
        function drawMainChart() {
              var options = {
                  width: 1000,
-                 height: 400,
-                 chartArea: { left: 20, top: 50, width: '50%', height: '75%' },
+                 height: 1000,
+                 chartArea: { left: 20, top: 50, width: '50%', height: '90%' },
                  bar: { groupWidth: "95%" },
                  legend: { position: "none" },
                  isStacked: false
@@ -294,8 +294,8 @@
                 <tr>
                 <th><asp:LinkButton runat="server" ID="SortByAktieButton" CommandName="Sort" Text="Aktie" CommandArgument="Investment" /></th>
                 <th><asp:LinkButton runat="server" ID="SortByAntalButton" CommandName="Sort" Text="Antal" CommandArgument="Antal" /></th>
-               <%-- <th><asp:LinkButton runat="server" ID="LinkButton1" CommandName="Sort" Text="GAVKurs" CommandArgument="GAVKurs" /></th>--%>
                 <th><asp:LinkButton runat="server" ID="LinkButton2" CommandName="Sort" Text="Kurs" CommandArgument="Kurs" /></th>
+                <th><asp:LinkButton runat="server" ID="LinkButton1" CommandName="Sort" Text="TotKostnad" CommandArgument="TotKostnad" /></th>
                 <th><asp:LinkButton runat="server" ID="LinkButton3" CommandName="Sort" Text="Summa" CommandArgument="Summa" /></th>
                     <th><asp:LinkButton runat="server" ID="LinkButton4" Text="Uppdatera" /></th>
                 </tr>
@@ -305,8 +305,8 @@
             <tr>
             <td><%# DataBinder.Eval(Container.DataItem,"Investment") %> </td>
             <td><button type="button" AntalValue ="<%# DataBinder.Eval(Container.DataItem,"Antal") %>" SymbolValue ="<%# DataBinder.Eval(Container.DataItem,"Symbol") %>"  ID="myBtn" ><%# DataBinder.Eval(Container.DataItem,"Antal") %></button> </td>
-<%--            <td><%# DataBinder.Eval(Container.DataItem,"GAVKurs") %></td>--%>
             <td><%# DataBinder.Eval(Container.DataItem,"Kurs") %></td>
+            <td><%# DataBinder.Eval(Container.DataItem,"TotKostnad") %></td>
             <td><%# DataBinder.Eval(Container.DataItem,"Summa") %></td>
             <td><asp:ImageButton ImageUrl="Images\icon.png" runat="server" ID="UpdateInv" CommandName="UpdateStockPrice" CommandArgument=<%# DataBinder.Eval(Container.DataItem,"Symbol") + "," + DataBinder.Eval(Container.DataItem,"Valuta") %>/>  </td>
             </tr>
@@ -380,7 +380,7 @@
     </div>--%>
  
 
-          <asp:HiddenField id="GraphTable" runat="server" Value ="kf"  />
+          <asp:HiddenField id="GraphTable" runat="server" Value ="AllaAktierCompound"  />
 
         </form>
         </div>
